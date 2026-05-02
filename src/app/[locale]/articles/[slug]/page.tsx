@@ -6,6 +6,7 @@ import { isValidLocale, locales } from '@/i18n.config'
 import type { Locale } from '@/i18n.config'
 import { getDictionary } from '@/lib/dictionary'
 import { getAllArticles, getArticleBySlug, getArticleSlugs } from '@/lib/articles'
+import LazySummary from '@/components/LazySummary'
 
 export function generateStaticParams() {
   const slugs = getArticleSlugs()
@@ -110,6 +111,15 @@ export default async function ArticlePage({
             </span>
           </div>
         </header>
+
+        {/* Lazy summary — shown when article has one */}
+        {((isAr && article.lazy_ar?.length) || (!isAr && article.lazy_en?.length)) && (
+          <LazySummary
+            points={(isAr ? article.lazy_ar : article.lazy_en) ?? []}
+            locale={locale}
+            labels={dict.lazy}
+          />
+        )}
 
         {/* Article body */}
         <div

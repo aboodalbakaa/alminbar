@@ -37,6 +37,12 @@
     "switch_to": "العربية",
     "current": "English"
   },
+  "lazy": {
+    "title": "TL;DR — For the Lazy",
+    "subtitle": "Key points for those with better things to do",
+    "hide": "Collapse",
+    "show": "Expand"
+  },
   "about": {
     "editor_title": "Founding Editor",
     "tariq_bio": "Iraqi thinker writing from the diaspora. Critical of systems, never personal. One goal: a prosperous Iraq.",

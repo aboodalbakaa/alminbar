@@ -7,6 +7,8 @@ export interface ArticleFrontmatter {
   topic_en: string
   excerpt_ar: string
   excerpt_en: string
+  lazy_ar?: string[]
+  lazy_en?: string[]
 }
 
 export interface Article extends ArticleFrontmatter {
