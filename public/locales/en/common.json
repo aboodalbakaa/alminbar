@@ -1,0 +1,62 @@
+{
+  "site": {
+    "name": "Al-Minbar",
+    "tagline": "Rigorous Analysis of Iraqi Affairs"
+  },
+  "nav": {
+    "home": "Home",
+    "articles": "Articles",
+    "about": "About",
+    "submit": "Submit"
+  },
+  "hero": {
+    "eyebrow": "The Platform for Iraqi Political Thought",
+    "title": "Critique the Structure\nFor a Prosperous Iraq",
+    "description": "Rigorous analysis and constructive criticism of Iraqi affairs — governance, economic policy, corruption, and institutional reform. One goal: a just and prosperous Iraq.",
+    "cta_read": "Read Articles",
+    "cta_about": "About Al-Minbar"
+  },
+  "articles": {
+    "latest_title": "Latest Articles",
+    "read_more": "Read More",
+    "all_articles": "All Articles",
+    "by": "By",
+    "minutes_read": "min read",
+    "minute_read": "min read",
+    "back_to_articles": "Back to Articles",
+    "no_articles": "No articles yet.",
+    "english_translation": "English Translation"
+  },
+  "footer": {
+    "tagline": "Critique the structure, not the person",
+    "tagline_sub": "For an Iraq governed by institutions and justice",
+    "copyright": "Al-Minbar",
+    "rights": "All Rights Reserved"
+  },
+  "language": {
+    "switch_to": "العربية",
+    "current": "English"
+  },
+  "about": {
+    "editor_title": "Founding Editor",
+    "tariq_bio": "Iraqi thinker writing from the diaspora. Critical of systems, never personal. One goal: a prosperous Iraq.",
+    "platform_title": "About Al-Minbar",
+    "platform_body": "Al-Minbar is a platform for political analysis and critical Iraqi thought. We believe reform begins with accurate diagnosis, proceeds through constructive critique, and arrives at sound institutional practice. We do not attack people — we analyse systems.",
+    "mission_title": "Our Mission",
+    "mission_body": "Constructive, evidence-based criticism of Iraqi governance — focused on the Prime Minister's office, economic policy, anti-corruption, infrastructure, and institutional reform."
+  },
+  "submit": {
+    "title": "Submit an Article",
+    "subtitle": "Have analysis worth publishing?",
+    "body": "Al-Minbar is open to contributions from serious writers and analysts who share our vision: critiquing systems objectively with evidence, not personal attacks. If you write about Iraqi affairs with depth and rigour, get in touch.",
+    "contact_label": "Contact email",
+    "guidelines_title": "Publication Standards",
+    "guidelines": [
+      "Evidence and data-based analysis, not bare opinion",
+      "Critique the structure and system, not the individual",
+      "Sound Arabic or English prose",
+      "Ideal length: 600–1200 words",
+      "Subject: Iraqi political, economic, and social affairs"
+    ]
+  }
+}

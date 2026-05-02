@@ -1,0 +1,58 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html[lang='ar'] body {
+    font-family: var(--font-arabic), 'Noto Naskh Arabic', serif;
+    line-height: 1.9;
+  }
+
+  html[lang='en'] body {
+    font-family: var(--font-body), system-ui, sans-serif;
+    line-height: 1.6;
+  }
+
+  html[lang='ar'] h1,
+  html[lang='ar'] h2,
+  html[lang='ar'] h3,
+  html[lang='ar'] h4 {
+    font-family: var(--font-arabic), serif;
+    font-weight: 700;
+  }
+
+  html[lang='en'] h1,
+  html[lang='en'] h2,
+  html[lang='en'] h3,
+  html[lang='en'] h4 {
+    font-family: var(--font-heading), Georgia, serif;
+  }
+
+  /* Smooth locale transitions */
+  * {
+    transition-property: none;
+  }
+}
+
+@layer components {
+  .gold-rule {
+    @apply border-t-2 border-gold/40;
+  }
+
+  .section-heading {
+    @apply text-2xl font-bold text-navy relative pb-3 mb-8;
+  }
+
+  .section-heading::after {
+    content: '';
+    @apply absolute bottom-0 start-0 w-12 h-0.5 bg-gold;
+  }
+
+  .btn-primary {
+    @apply inline-block bg-gold text-navy font-semibold px-6 py-3 hover:bg-gold-dark transition-colors duration-200;
+  }
+
+  .btn-outline {
+    @apply inline-block border border-gold/60 text-gold px-6 py-3 hover:border-gold hover:text-gold-light transition-colors duration-200;
+  }
+}
