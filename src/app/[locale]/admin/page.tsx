@@ -3,9 +3,14 @@ import { isValidLocale } from '@/i18n.config'
 import type { Locale } from '@/i18n.config'
 import { getDictionary } from '@/lib/dictionary'
 import { createClient } from '@/lib/supabase/server'
-import { approveSubmission, rejectSubmission, approveComment, rejectComment } from '@/app/actions/admin'
+import { approveComment, rejectComment, updateUserRole } from '@/app/actions/admin'
+import AdminTabs from '@/components/AdminTabs'
+import SubmissionReview from '@/components/SubmissionReview'
 import type { Submission } from '@/types/submission'
 import type { Comment } from '@/types/comment'
+import type { Profile } from '@/types/profile'
+
+export const dynamic = 'force-dynamic'
 
 export default async function AdminPage({ params }: { params: { locale: string } }) {
   if (!isValidLocale(params.locale)) notFound()
@@ -18,129 +23,175 @@ export default async function AdminPage({ params }: { params: { locale: string }
   if (!user) redirect(`/${locale}/auth/login`)
 
   const { data: profile } = await supabase
-    .from('profiles')
-    .select('role')
-    .eq('id', user.id)
-    .single()
-
+    .from('profiles').select('role').eq('id', user.id).single()
   if (profile?.role !== 'admin') notFound()
 
-  const [{ data: pendingSubmissions }, { data: pendingComments }] = await Promise.all([
-    supabase
-      .from('submissions')
-      .select('*, profiles(display_name)')
-      .eq('status', 'pending')
-      .order('created_at', { ascending: true }),
-    supabase
-      .from('comments')
-      .select('*, profiles(display_name)')
-      .eq('status', 'pending')
-      .order('created_at', { ascending: true }),
+  const [
+    { data: pendingSubs },
+    { data: pendingComments },
+    { data: allUsers },
+    { count: totalUsers },
+    { count: totalPublished },
+    { count: totalComments },
+  ] = await Promise.all([
+    supabase.from('submissions').select('*, profiles(display_name)')
+      .eq('status', 'pending').order('created_at', { ascending: true }),
+    supabase.from('comments').select('*, profiles(display_name)')
+      .eq('status', 'pending').order('created_at', { ascending: true }),
+    supabase.from('profiles').select('*').order('created_at', { ascending: false }),
+    supabase.from('profiles').select('*', { count: 'exact', head: true }),
+    supabase.from('submissions').select('*', { count: 'exact', head: true }).eq('status', 'approved'),
+    supabase.from('comments').select('*', { count: 'exact', head: true }).eq('status', 'approved'),
   ])
 
-  const subs = (pendingSubmissions ?? []) as Submission[]
+  const subs = (pendingSubs ?? []) as Submission[]
   const comments = (pendingComments ?? []) as Comment[]
+  const users = (allUsers ?? []) as Profile[]
 
-  const btnBase = 'text-xs px-4 py-2 transition-colors duration-200'
+  const reviewLabels = {
+    approve: dict.admin.approve,
+    reject: dict.admin.reject,
+    rejection_reason: dict.admin.rejection_reason,
+    read_more: isAr ? 'اقرأ المقالة' : 'Read article',
+    collapse: isAr ? 'أخفِ' : 'Collapse',
+  }
+
+  const roles = ['reader', 'contributor', 'editor', 'admin']
+  const roleColour: Record<string, string> = {
+    reader: 'text-navy/40 bg-navy/5',
+    contributor: 'text-blue-700 bg-blue-50',
+    editor: 'text-amber-700 bg-amber-50',
+    admin: 'text-gold bg-gold/10',
+  }
 
   return (
-    <div className="py-12 px-6">
-      <div className="max-w-3xl mx-auto">
-        <h1 className={`text-navy mb-10 pb-6 border-b border-gold/20 ${isAr ? 'font-arabic text-3xl' : 'font-heading text-2xl'}`}>
-          {dict.admin.title}
-        </h1>
+    <div className="py-10 px-6">
+      <div className="max-w-4xl mx-auto">
 
-        {/* Pending Submissions */}
-        <section className="mb-14">
-          <h2 className="text-gold text-xs uppercase tracking-widest mb-6">
-            {dict.admin.pending_submissions} ({subs.length})
-          </h2>
+        {/* Header */}
+        <div className="mb-10">
+          <h1 className={`text-navy mb-1 ${isAr ? 'font-arabic text-3xl' : 'font-heading text-2xl'}`}>
+            {dict.admin.title}
+          </h1>
+          <p className="text-navy/35 text-xs uppercase tracking-widest">
+            {isAr ? 'المنبر — لوحة التحكم الداخلية' : 'Al-Minbar — Internal Operations'}
+          </p>
+        </div>
 
-          {subs.length === 0 ? (
-            <p className="text-navy/35 text-sm">{dict.admin.no_pending}</p>
-          ) : (
-            <div className="space-y-6">
-              {subs.map(sub => (
-                <div key={sub.id} className="border border-navy/10 p-6">
-                  <div className="mb-1">
-                    <span className="text-gold text-xs uppercase tracking-widest">{sub.topic_ar}</span>
-                  </div>
-                  <p className="font-arabic text-navy font-semibold text-lg leading-snug mb-1">{sub.title_ar}</p>
-                  {sub.title_en && <p className="font-heading text-navy/60 text-sm mb-3">{sub.title_en}</p>}
-                  <p className="text-navy/45 text-xs mb-4">
-                    {sub.profiles?.display_name} ·{' '}
-                    {new Date(sub.created_at).toLocaleDateString(isAr ? 'ar-IQ' : 'en-GB')}
-                  </p>
-                  {sub.excerpt_ar && (
-                    <p className="font-arabic text-navy/60 text-sm leading-relaxed mb-4 border-s-2 border-gold/30 ps-3">
-                      {sub.excerpt_ar}
-                    </p>
-                  )}
-                  <div className="flex gap-3 pt-4 border-t border-navy/10">
-                    <form action={approveSubmission}>
-                      <input type="hidden" name="id" value={sub.id} />
-                      <button type="submit" className={`${btnBase} bg-emerald-700 text-white hover:bg-emerald-800`}>
-                        {dict.admin.approve}
-                      </button>
-                    </form>
-                    <form action={rejectSubmission} className="flex gap-2 flex-1">
-                      <input type="hidden" name="id" value={sub.id} />
-                      <input
-                        type="text"
-                        name="reason"
-                        placeholder={dict.admin.rejection_reason}
-                        className="flex-1 border border-navy/20 px-3 py-1.5 text-xs text-navy focus:outline-none focus:border-gold"
-                      />
-                      <button type="submit" className={`${btnBase} border border-red-300 text-red-700 hover:bg-red-50`}>
-                        {dict.admin.reject}
-                      </button>
-                    </form>
-                  </div>
-                </div>
-              ))}
+        {/* Stats */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
+          {[
+            { label: isAr ? 'المستخدمون' : 'Users', value: totalUsers ?? 0, accent: false },
+            { label: isAr ? 'مقالات معلقة' : 'Pending', value: subs.length, accent: subs.length > 0 },
+            { label: isAr ? 'مقالات منشورة' : 'Approved', value: totalPublished ?? 0, accent: false },
+            { label: isAr ? 'تعليقات مقبولة' : 'Comments', value: totalComments ?? 0, accent: false },
+          ].map(stat => (
+            <div key={stat.label} className={`border p-5 ${stat.accent ? 'border-gold/40 bg-gold/5' : 'border-navy/10'}`}>
+              <p className={`text-2xl font-heading font-bold mb-1 ${stat.accent ? 'text-gold' : 'text-navy'}`}>
+                {stat.value}
+              </p>
+              <p className="text-navy/40 text-xs uppercase tracking-widest">{stat.label}</p>
             </div>
-          )}
-        </section>
+          ))}
+        </div>
 
-        {/* Pending Comments */}
-        <section>
-          <h2 className="text-gold text-xs uppercase tracking-widest mb-6">
-            {dict.admin.pending_comments} ({comments.length})
-          </h2>
+        {/* Tabs */}
+        <AdminTabs
+          tabs={[
+            { id: 'submissions', label: isAr ? 'المقالات المعلقة' : 'Submissions', count: subs.length },
+            { id: 'comments', label: isAr ? 'التعليقات' : 'Comments', count: comments.length },
+            { id: 'users', label: isAr ? 'المستخدمون' : 'Users', count: users.length },
+          ]}
+        >
+          {/* Tab 1 — Submissions */}
+          <div className="space-y-4">
+            {subs.length === 0 ? (
+              <div className="text-center py-16 text-navy/25">
+                <p className="text-4xl mb-3">✓</p>
+                <p className={isAr ? 'font-arabic' : ''}>{dict.admin.no_pending}</p>
+              </div>
+            ) : (
+              subs.map(sub => (
+                <SubmissionReview key={sub.id} sub={sub} isAr={isAr} labels={reviewLabels} />
+              ))
+            )}
+          </div>
 
-          {comments.length === 0 ? (
-            <p className="text-navy/35 text-sm">{dict.admin.no_pending}</p>
-          ) : (
-            <div className="space-y-4">
-              {comments.map(c => (
-                <div key={c.id} className="border border-navy/10 p-5">
-                  <div className="flex items-baseline gap-3 mb-2">
+          {/* Tab 2 — Comments */}
+          <div className="space-y-3">
+            {comments.length === 0 ? (
+              <div className="text-center py-16 text-navy/25">
+                <p className="text-4xl mb-3">✓</p>
+                <p className={isAr ? 'font-arabic' : ''}>{dict.admin.no_pending}</p>
+              </div>
+            ) : (
+              comments.map(c => (
+                <div key={c.id} className="border border-navy/10 p-5 hover:border-gold/20 transition-colors">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="w-7 h-7 rounded-full bg-navy/10 flex items-center justify-center text-xs text-navy/40 font-semibold flex-shrink-0">
+                      {c.profiles?.display_name?.[0]?.toUpperCase()}
+                    </div>
                     <span className="text-navy text-sm font-medium">{c.profiles?.display_name}</span>
-                    <span className="text-navy/35 text-xs">
+                    <span className="text-navy/25 text-xs">·</span>
+                    <span className="text-navy/35 text-xs font-mono">{c.article_slug}</span>
+                    <span className="text-navy/25 ms-auto text-xs">
                       {new Date(c.created_at).toLocaleDateString(isAr ? 'ar-IQ' : 'en-GB')}
                     </span>
-                    <span className="text-navy/30 text-xs">→ {c.article_slug}</span>
                   </div>
-                  <p className="text-navy/70 text-sm leading-relaxed mb-4">{c.body}</p>
+                  <p className={`text-navy/70 text-sm leading-relaxed mb-4 ${isAr ? 'font-arabic' : ''}`}>
+                    {c.body}
+                  </p>
                   <div className="flex gap-3">
                     <form action={approveComment}>
                       <input type="hidden" name="id" value={c.id} />
-                      <button type="submit" className={`${btnBase} bg-emerald-700 text-white hover:bg-emerald-800`}>
-                        {dict.admin.approve}
+                      <button type="submit" className="bg-emerald-700 text-white text-xs px-4 py-1.5 hover:bg-emerald-800 transition-colors">
+                        ✓ {dict.admin.approve}
                       </button>
                     </form>
                     <form action={rejectComment}>
                       <input type="hidden" name="id" value={c.id} />
-                      <button type="submit" className={`${btnBase} border border-red-300 text-red-700 hover:bg-red-50`}>
-                        {dict.admin.reject}
+                      <button type="submit" className="border border-red-300 text-red-600 text-xs px-4 py-1.5 hover:bg-red-50 transition-colors">
+                        ✕ {dict.admin.reject}
                       </button>
                     </form>
                   </div>
                 </div>
-              ))}
-            </div>
-          )}
-        </section>
+              ))
+            )}
+          </div>
+
+          {/* Tab 3 — Users */}
+          <div className="space-y-2">
+            {users.map(u => (
+              <div key={u.id} className="border border-navy/10 p-4 flex items-center gap-4 hover:border-gold/20 transition-colors">
+                <div className="w-9 h-9 rounded-full bg-navy/10 flex items-center justify-center text-sm text-navy/40 font-semibold flex-shrink-0">
+                  {u.display_name?.[0]?.toUpperCase()}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-navy text-sm font-medium truncate">{u.display_name}</p>
+                  <p className="text-navy/35 text-xs">
+                    {new Date(u.created_at).toLocaleDateString(isAr ? 'ar-IQ' : 'en-GB')}
+                  </p>
+                </div>
+                <span className={`text-xs px-2 py-1 flex-shrink-0 ${roleColour[u.role] ?? 'text-navy/40 bg-navy/5'}`}>
+                  {u.role}
+                </span>
+                <form action={updateUserRole} className="flex-shrink-0">
+                  <input type="hidden" name="id" value={u.id} />
+                  <select
+                    name="role"
+                    defaultValue={u.role}
+                    onChange={e => (e.target.form as HTMLFormElement).requestSubmit()}
+                    className="text-xs border border-navy/15 px-2 py-1.5 text-navy focus:outline-none focus:border-gold bg-white"
+                  >
+                    {roles.map(r => <option key={r} value={r}>{r}</option>)}
+                  </select>
+                </form>
+              </div>
+            ))}
+          </div>
+        </AdminTabs>
+
       </div>
     </div>
   )

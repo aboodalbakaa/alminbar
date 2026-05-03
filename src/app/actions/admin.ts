@@ -56,3 +56,13 @@ export async function rejectComment(formData: FormData) {
   revalidatePath('/ar/admin')
   revalidatePath('/en/admin')
 }
+
+export async function updateUserRole(formData: FormData) {
+  const { supabase } = await assertAdmin()
+  await supabase
+    .from('profiles')
+    .update({ role: formData.get('role') as string })
+    .eq('id', formData.get('id'))
+  revalidatePath('/ar/admin')
+  revalidatePath('/en/admin')
+}
