@@ -23,7 +23,12 @@ export default function SubmissionReview({ sub, isAr, labels }: Props) {
       {/* Header */}
       <div className="p-6">
         <div className="flex items-start justify-between gap-4 mb-3">
-          <span className="text-gold text-xs uppercase tracking-widest">{sub.topic_ar}</span>
+          <div className="flex items-center gap-3">
+            <span className="text-gold text-xs uppercase tracking-widest">{sub.topic_ar}</span>
+            <span className={`text-xs px-2 py-0.5 ${sub.status === 'pending' ? 'bg-amber-50 text-amber-700' : 'bg-navy/5 text-navy/40'}`}>
+              {sub.status}
+            </span>
+          </div>
           <span className="text-navy/30 text-xs flex-shrink-0">
             {new Date(sub.created_at).toLocaleDateString(isAr ? 'ar-IQ' : 'en-GB', {
               day: 'numeric', month: 'short', year: 'numeric',

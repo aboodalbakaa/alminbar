@@ -36,7 +36,7 @@ export default async function AdminPage({ params }: { params: { locale: string }
     { count: totalComments },
   ] = await Promise.all([
     supabase.from('submissions').select('*, profiles(display_name)')
-      .eq('status', 'pending').order('created_at', { ascending: true }),
+      .in('status', ['pending', 'draft']).order('created_at', { ascending: true }),
     supabase.from('comments').select('*, profiles(display_name)')
       .eq('status', 'pending').order('created_at', { ascending: true }),
     supabase.from('profiles').select('*').order('created_at', { ascending: false }),
@@ -98,7 +98,7 @@ export default async function AdminPage({ params }: { params: { locale: string }
         {/* Tabs */}
         <AdminTabs
           tabs={[
-            { id: 'submissions', label: isAr ? 'المقالات المعلقة' : 'Submissions', count: subs.length },
+            { id: 'submissions', label: isAr ? 'المقالات' : 'Submissions', count: subs.length },
             { id: 'comments', label: isAr ? 'التعليقات' : 'Comments', count: comments.length },
             { id: 'users', label: isAr ? 'المستخدمون' : 'Users', count: users.length },
           ]}
