@@ -16,6 +16,7 @@ export interface Article extends ArticleFrontmatter {
   content: string
   readingTimeMinutes: number
   // Supabase-submitted articles only
+  author_id?: string
   content_en?: string
   youtube_url?: string | null
   source?: 'mdx' | 'db'

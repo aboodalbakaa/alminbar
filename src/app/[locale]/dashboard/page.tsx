@@ -40,9 +40,17 @@ export default async function DashboardPage({ params }: { params: { locale: stri
           <h1 className={`text-navy ${isAr ? 'font-arabic text-3xl' : 'font-heading text-2xl'}`}>
             {dict.dashboard.title}
           </h1>
-          <Link href={`/${locale}/submit`} className="btn-primary text-sm">
-            {dict.dashboard.new_submission}
-          </Link>
+          <div className="flex items-center gap-3">
+            <Link
+              href={`/${locale}/dashboard/profile`}
+              className="btn-secondary text-sm"
+            >
+              {isAr ? 'الملف الشخصي' : 'Profile'}
+            </Link>
+            <Link href={`/${locale}/submit`} className="btn-primary text-sm">
+              {dict.dashboard.new_submission}
+            </Link>
+          </div>
         </div>
 
         <h2 className="text-gold text-xs uppercase tracking-widest mb-5">

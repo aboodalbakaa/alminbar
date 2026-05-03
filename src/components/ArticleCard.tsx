@@ -98,7 +98,17 @@ export default function ArticleCard({ article, locale, dict }: Props) {
         <div className="flex items-center justify-between pt-4 border-t border-gray-100 text-xs text-navy/45">
           <span>
             {dict.articles.by}{' '}
-            <span className="text-navy/70 font-medium">{article.author}</span>
+            {article.author_id ? (
+              <Link
+                href={`/${locale}/writers/${article.author_id}`}
+                className="text-navy/70 font-medium hover:text-gold transition-colors"
+                onClick={e => e.stopPropagation()}
+              >
+                {article.author}
+              </Link>
+            ) : (
+              <span className="text-navy/70 font-medium">{article.author}</span>
+            )}
           </span>
           <div className="flex items-center gap-3">
             <time dateTime={article.date}>{formatDate(article.date, locale)}</time>

@@ -12,6 +12,7 @@ function rowToArticle(sub: Record<string, any>): Article {
     title_ar: sub.title_ar,
     title_en: sub.title_en || sub.title_ar,
     author: sub.profiles?.display_name || 'Unknown',
+    author_id: sub.author_id || undefined,
     date: sub.reviewed_at || sub.created_at,
     topic_ar: sub.topic_ar,
     topic_en: sub.topic_en || sub.topic_ar,
@@ -29,6 +30,17 @@ export async function getAllDbArticles(): Promise<Article[]> {
   const { data } = await admin
     .from('submissions')
     .select('*, profiles!submissions_author_id_fkey(display_name)')
+    .in('status', ['approved', 'published'])
+    .order('created_at', { ascending: false })
+  return (data ?? []).map(rowToArticle)
+}
+
+export async function getDbArticlesByAuthor(authorId: string): Promise<Article[]> {
+  const admin = createAdminClient()
+  const { data } = await admin
+    .from('submissions')
+    .select('*, profiles!submissions_author_id_fkey(display_name)')
+    .eq('author_id', authorId)
     .in('status', ['approved', 'published'])
     .order('created_at', { ascending: false })
   return (data ?? []).map(rowToArticle)

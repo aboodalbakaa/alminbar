@@ -17,6 +17,7 @@ export default function Header({ locale, dict }: Props) {
   const navLinks = [
     { href: `/${locale}`, label: dict.nav.home },
     { href: `/${locale}/articles`, label: dict.nav.articles },
+    { href: `/${locale}/writers`, label: isAr ? 'الكتّاب' : 'Writers' },
     { href: `/${locale}/about`, label: dict.nav.about },
     { href: `/${locale}/submit`, label: dict.nav.submit },
   ]
