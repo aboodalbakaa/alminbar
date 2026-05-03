@@ -6,6 +6,7 @@ import type { Locale } from '@/i18n.config'
 import { getDictionary } from '@/lib/dictionary'
 import { createClient } from '@/lib/supabase/server'
 import type { Submission } from '@/types/submission'
+import DeleteSubmissionButton from '@/components/DeleteSubmissionButton'
 
 const statusColour: Record<string, string> = {
   draft: 'text-navy/40 bg-navy/5',
@@ -94,16 +95,19 @@ export default async function DashboardPage({ params }: { params: { locale: stri
                     </p>
                   )}
 
-                  {['draft', 'rejected'].includes(sub.status) && (
-                    <div className="mt-3 pt-3 border-t border-navy/10">
-                      <Link
-                        href={`/${locale}/submit/edit/${sub.id}`}
-                        className="text-gold hover:text-gold-dark text-xs transition-colors duration-200"
-                      >
-                        {dict.dashboard.edit} →
-                      </Link>
+                  <div className="mt-3 pt-3 border-t border-navy/10 flex items-center justify-between gap-4">
+                    <div>
+                      {['draft', 'rejected'].includes(sub.status) && (
+                        <Link
+                          href={`/${locale}/submit/edit/${sub.id}`}
+                          className="text-gold hover:text-gold-dark text-xs transition-colors duration-200"
+                        >
+                          {dict.dashboard.edit} →
+                        </Link>
+                      )}
                     </div>
-                  )}
+                    <DeleteSubmissionButton id={sub.id} locale={locale} />
+                  </div>
                 </div>
               )
             })}

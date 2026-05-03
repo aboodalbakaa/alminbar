@@ -66,3 +66,30 @@ export async function updateUserRole(formData: FormData) {
   revalidatePath('/ar/admin')
   revalidatePath('/en/admin')
 }
+
+export async function deleteSubmission(formData: FormData) {
+  const supabase = createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) throw new Error('Unauthenticated')
+
+  const id = formData.get('id') as string
+  const locale = (formData.get('locale') as string) || 'ar'
+
+  const { data: profile } = await supabase
+    .from('profiles').select('role').eq('id', user.id).single()
+  const isAdmin = profile?.role === 'admin'
+
+  if (isAdmin) {
+    await supabase.from('submissions').delete().eq('id', id)
+  } else {
+    await supabase.from('submissions').delete().eq('id', id).eq('author_id', user.id)
+  }
+
+  revalidatePath(`/${locale}/dashboard`)
+  revalidatePath('/ar/admin')
+  revalidatePath('/en/admin')
+  revalidatePath('/ar/articles')
+  revalidatePath('/en/articles')
+  revalidatePath('/ar')
+  revalidatePath('/en')
+}
