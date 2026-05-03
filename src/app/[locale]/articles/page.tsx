@@ -4,7 +4,10 @@ import { isValidLocale } from '@/i18n.config'
 import type { Locale } from '@/i18n.config'
 import { getDictionary } from '@/lib/dictionary'
 import { getAllArticles } from '@/lib/articles'
+import { getAllDbArticles } from '@/lib/supabase/articles'
 import ArticleCard from '@/components/ArticleCard'
+
+export const dynamic = 'force-dynamic'
 
 export async function generateMetadata({
   params,
@@ -24,10 +27,14 @@ export default async function ArticlesPage({
   if (!isValidLocale(params.locale)) notFound()
 
   const locale = params.locale as Locale
-  const [dict, articles] = await Promise.all([
+  const [dict, mdxArticles, dbArticles] = await Promise.all([
     getDictionary(locale),
     Promise.resolve(getAllArticles()),
+    getAllDbArticles(),
   ])
+  const articles = [...dbArticles, ...mdxArticles].sort(
+    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+  )
 
   const isAr = locale === 'ar'
 

@@ -6,6 +6,7 @@ import { isValidLocale, locales } from '@/i18n.config'
 import type { Locale } from '@/i18n.config'
 import { getDictionary } from '@/lib/dictionary'
 import { getAllArticles, getArticleBySlug, getArticleSlugs } from '@/lib/articles'
+import { getDbArticleById } from '@/lib/supabase/articles'
 import LazySummary from '@/components/LazySummary'
 import YouTubeEmbed from '@/components/YouTubeEmbed'
 import LiveComments from '@/components/LiveComments'
@@ -63,11 +64,18 @@ export default async function ArticlePage({
   const locale = params.locale as Locale
   const isAr = locale === 'ar'
 
+  const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
   let article
-  try {
-    article = getArticleBySlug(params.slug)
-  } catch {
-    notFound()
+  if (UUID_RE.test(params.slug)) {
+    const dbArticle = await getDbArticleById(params.slug)
+    if (!dbArticle) notFound()
+    article = dbArticle
+  } else {
+    try {
+      article = getArticleBySlug(params.slug)
+    } catch {
+      notFound()
+    }
   }
 
   const supabase = createClient()
@@ -149,6 +157,25 @@ export default async function ArticlePage({
         >
           <MDXRemote source={article.content} components={{ YouTubeEmbed }} />
         </div>
+
+        {/* YouTube embed for DB articles */}
+        {article.youtube_url && (
+          <div className="mt-8">
+            <YouTubeEmbed url={article.youtube_url} />
+          </div>
+        )}
+
+        {/* English translation for DB articles */}
+        {article.content_en && (
+          <div className="mt-12 pt-8 border-t border-gold/20">
+            <p className="text-gold text-xs uppercase tracking-widest font-semibold mb-6">
+              {dict.articles.english_translation}
+            </p>
+            <div className="prose prose-lg max-w-none prose-headings:font-heading prose-p:font-body">
+              <MDXRemote source={article.content_en} components={{ YouTubeEmbed }} />
+            </div>
+          </div>
+        )}
 
         {/* Author bio */}
         <div className="mt-14 pt-8 border-t border-gold/20">
