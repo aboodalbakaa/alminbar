@@ -5,6 +5,7 @@ import type { Locale } from '@/i18n.config'
 import { getDictionary } from '@/lib/dictionary'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
+import HtmlAttributeSetter from '@/components/HtmlAttributeSetter'
 
 export function generateStaticParams() {
   return locales.map(locale => ({ locale }))
@@ -40,6 +41,7 @@ export default async function LocaleLayout({
 
   return (
     <>
+      <HtmlAttributeSetter locale={locale} />
       <Header locale={locale} dict={dict} />
       <main className="flex-1">{children}</main>
       <Footer locale={locale} dict={dict} />

@@ -1,5 +1,4 @@
 import type { Metadata } from 'next'
-import { headers } from 'next/headers'
 import { Noto_Naskh_Arabic, Playfair_Display, Inter } from 'next/font/google'
 import './globals.css'
 
@@ -43,14 +42,10 @@ export default function RootLayout({
 }: {
   children: React.ReactNode
 }) {
-  const headersList = headers()
-  const locale = headersList.get('x-locale') ?? 'ar'
-  const isRTL = locale === 'ar'
-
   return (
     <html
-      lang={locale}
-      dir={isRTL ? 'rtl' : 'ltr'}
+      lang="ar"
+      dir="rtl"
       className={`${notoNaskhArabic.variable} ${playfairDisplay.variable} ${inter.variable}`}
     >
       <body className="bg-cream text-navy min-h-screen flex flex-col antialiased">
