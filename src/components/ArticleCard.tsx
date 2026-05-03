@@ -102,7 +102,6 @@ export default function ArticleCard({ article, locale, dict }: Props) {
               <Link
                 href={`/${locale}/writers/${article.author_id}`}
                 className="text-navy/70 font-medium hover:text-gold transition-colors"
-                onClick={e => e.stopPropagation()}
               >
                 {article.author}
               </Link>
