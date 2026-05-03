@@ -25,7 +25,16 @@
     "minute_read": "min read",
     "back_to_articles": "Back to Articles",
     "no_articles": "No articles yet.",
-    "english_translation": "English Translation"
+    "english_translation": "English Translation",
+    "search_placeholder": "Search articles...",
+    "filter_all": "All",
+    "no_results": "No results found.",
+    "related_title": "Related Articles",
+    "share_title": "Share",
+    "share_whatsapp": "WhatsApp",
+    "share_twitter": "Twitter / X",
+    "share_copy": "Copy link",
+    "share_copied": "Copied!"
   },
   "footer": {
     "tagline": "Critique the structure, not the person",

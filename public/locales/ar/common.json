@@ -25,7 +25,16 @@
     "minute_read": "دقيقة للقراءة",
     "back_to_articles": "العودة إلى المقالات",
     "no_articles": "لا توجد مقالات بعد.",
-    "english_translation": "الترجمة الإنجليزية"
+    "english_translation": "الترجمة الإنجليزية",
+    "search_placeholder": "ابحث في المقالات...",
+    "filter_all": "الكل",
+    "no_results": "لا توجد نتائج مطابقة.",
+    "related_title": "مقالات ذات صلة",
+    "share_title": "شارك",
+    "share_whatsapp": "واتساب",
+    "share_twitter": "تويتر",
+    "share_copy": "نسخ الرابط",
+    "share_copied": "تم النسخ!"
   },
   "footer": {
     "tagline": "نقد البنية، لا الأشخاص",

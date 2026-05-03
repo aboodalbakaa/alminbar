@@ -6,10 +6,12 @@ import { isValidLocale, locales } from '@/i18n.config'
 import type { Locale } from '@/i18n.config'
 import { getDictionary } from '@/lib/dictionary'
 import { getAllArticles, getArticleBySlug, getArticleSlugs } from '@/lib/articles'
-import { getDbArticleById } from '@/lib/supabase/articles'
+import { getDbArticleById, getAllDbArticles } from '@/lib/supabase/articles'
 import LazySummary from '@/components/LazySummary'
 import YouTubeEmbed from '@/components/YouTubeEmbed'
 import LiveComments from '@/components/LiveComments'
+import ShareButtons from '@/components/ShareButtons'
+import ArticleCard from '@/components/ArticleCard'
 import { createClient } from '@/lib/supabase/server'
 import type { Comment } from '@/types/comment'
 
@@ -79,7 +81,7 @@ export default async function ArticlePage({
   }
 
   const supabase = createClient()
-  const [dict, { data: { user } }, { data: rawComments }] = await Promise.all([
+  const [dict, { data: { user } }, { data: rawComments }, mdxArticles, dbArticles] = await Promise.all([
     getDictionary(locale),
     supabase.auth.getUser(),
     supabase
@@ -88,7 +90,15 @@ export default async function ArticlePage({
       .eq('article_slug', params.slug)
       .eq('status', 'approved')
       .order('created_at', { ascending: true }),
+    Promise.resolve(getAllArticles()),
+    getAllDbArticles(),
   ])
+
+  const currentTopic = article.topic_en || article.topic_ar
+  const allArticles = [...dbArticles, ...mdxArticles]
+  const relatedArticles = allArticles
+    .filter(a => (a.topic_en || a.topic_ar) === currentTopic && a.slug !== article.slug)
+    .slice(0, 3)
 
   const initialComments = (rawComments ?? []) as Comment[]
   const title = isAr ? article.title_ar : article.title_en
@@ -177,8 +187,13 @@ export default async function ArticlePage({
           </div>
         )}
 
+        {/* Share buttons */}
+        <div className="mt-10 pt-8 border-t border-gold/20">
+          <ShareButtons title={title} locale={locale} dict={dict} />
+        </div>
+
         {/* Author bio */}
-        <div className="mt-14 pt-8 border-t border-gold/20">
+        <div className="mt-10 pt-8 border-t border-gold/20">
           <div className="flex items-start gap-4">
             <div className="w-12 h-12 rounded-full bg-navy/10 flex items-center justify-center flex-shrink-0">
               <span className="text-navy/40 text-lg font-arabic">ط</span>
@@ -193,6 +208,22 @@ export default async function ArticlePage({
             </div>
           </div>
         </div>
+
+        {/* Related articles */}
+        {relatedArticles.length > 0 && (
+          <div className="mt-14 pt-8 border-t border-gold/20">
+            <h2
+              className={`text-navy font-bold mb-6 ${isAr ? 'font-arabic text-xl' : 'font-heading text-lg'}`}
+            >
+              {dict.articles.related_title}
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {relatedArticles.map(a => (
+                <ArticleCard key={a.slug} article={a} locale={locale} dict={dict} />
+              ))}
+            </div>
+          </div>
+        )}
 
         <LiveComments
           locale={locale}

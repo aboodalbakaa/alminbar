@@ -5,7 +5,7 @@ import type { Locale } from '@/i18n.config'
 import { getDictionary } from '@/lib/dictionary'
 import { getAllArticles } from '@/lib/articles'
 import { getAllDbArticles } from '@/lib/supabase/articles'
-import ArticleCard from '@/components/ArticleCard'
+import ArticlesFilter from '@/components/ArticlesFilter'
 
 export const dynamic = 'force-dynamic'
 
@@ -55,16 +55,7 @@ export default async function ArticlesPage({
             <p className="text-xl">{dict.articles.no_articles}</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {articles.map(article => (
-              <ArticleCard
-                key={article.slug}
-                article={article}
-                locale={locale}
-                dict={dict}
-              />
-            ))}
-          </div>
+          <ArticlesFilter articles={articles} locale={locale} dict={dict} />
         )}
       </div>
     </div>
