@@ -22,6 +22,7 @@ export async function createSubmission(formData: FormData) {
     content_en: formData.get('content_en') as string,
     topic_ar: (formData.get('topic_ar') as string) || 'سياسة',
     topic_en: (formData.get('topic_en') as string) || 'Politics',
+    youtube_url: (formData.get('youtube_url') as string) || null,
     status,
   }).select('id').single()
 
@@ -54,6 +55,7 @@ export async function updateSubmission(formData: FormData) {
       content_en: formData.get('content_en') as string,
       topic_ar: formData.get('topic_ar') as string,
       topic_en: formData.get('topic_en') as string,
+      youtube_url: (formData.get('youtube_url') as string) || null,
       status,
       updated_at: new Date().toISOString(),
     })

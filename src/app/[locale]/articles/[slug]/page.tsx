@@ -7,7 +7,10 @@ import type { Locale } from '@/i18n.config'
 import { getDictionary } from '@/lib/dictionary'
 import { getAllArticles, getArticleBySlug, getArticleSlugs } from '@/lib/articles'
 import LazySummary from '@/components/LazySummary'
-import CommentsSection from '@/components/CommentsSection'
+import YouTubeEmbed from '@/components/YouTubeEmbed'
+import LiveComments from '@/components/LiveComments'
+import { createClient } from '@/lib/supabase/server'
+import type { Comment } from '@/types/comment'
 
 export const dynamic = 'force-dynamic'
 
@@ -67,7 +70,19 @@ export default async function ArticlePage({
     notFound()
   }
 
-  const dict = await getDictionary(locale)
+  const supabase = createClient()
+  const [dict, { data: { user } }, { data: rawComments }] = await Promise.all([
+    getDictionary(locale),
+    supabase.auth.getUser(),
+    supabase
+      .from('comments')
+      .select('*, profiles(display_name)')
+      .eq('article_slug', params.slug)
+      .eq('status', 'approved')
+      .order('created_at', { ascending: true }),
+  ])
+
+  const initialComments = (rawComments ?? []) as Comment[]
   const title = isAr ? article.title_ar : article.title_en
   const topic = isAr ? article.topic_ar : article.topic_en
 
@@ -132,7 +147,7 @@ export default async function ArticlePage({
               : 'prose-headings:font-heading prose-p:font-body'
           }`}
         >
-          <MDXRemote source={article.content} />
+          <MDXRemote source={article.content} components={{ YouTubeEmbed }} />
         </div>
 
         {/* Author bio */}
@@ -152,7 +167,13 @@ export default async function ArticlePage({
           </div>
         </div>
 
-        <CommentsSection locale={locale} dict={dict} articleSlug={params.slug} />
+        <LiveComments
+          locale={locale}
+          dict={dict}
+          articleSlug={params.slug}
+          initialComments={initialComments}
+          userId={user?.id ?? null}
+        />
       </div>
     </div>
   )

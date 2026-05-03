@@ -11,6 +11,7 @@ export interface Submission {
   content_en: string | null
   topic_ar: string
   topic_en: string
+  youtube_url: string | null
   status: SubmissionStatus
   rejection_reason: string | null
   reviewed_by: string | null

@@ -115,6 +115,20 @@ export default function SubmitForm({ locale, dict, draft }: Props) {
         />
       </div>
 
+      {/* YouTube */}
+      <div>
+        <label className={labelClass}>{dict.submit.form_youtube}</label>
+        <input
+          type="url"
+          name="youtube_url"
+          defaultValue={draft?.youtube_url ?? ''}
+          dir="ltr"
+          className={inputClass}
+          placeholder="https://www.youtube.com/watch?v=..."
+        />
+        <p className="text-navy/35 text-xs mt-1">{dict.submit.form_youtube_hint}</p>
+      </div>
+
       {/* Content */}
       <div>
         <label className={`${labelClass} ${isAr ? 'font-arabic' : ''}`}>
