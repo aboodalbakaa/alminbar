@@ -31,8 +31,6 @@ export default async function DashboardPage({ params }: { params: { locale: stri
     .eq('author_id', user.id)
     .order('updated_at', { ascending: false })
 
-  const checkEmail = new URLSearchParams().get('message') === 'check-email'
-
   const list = (submissions ?? []) as Submission[]
 
   return (
@@ -46,12 +44,6 @@ export default async function DashboardPage({ params }: { params: { locale: stri
             {dict.dashboard.new_submission}
           </Link>
         </div>
-
-        {checkEmail && (
-          <div className="mb-8 p-4 bg-gold/10 border border-gold/30 text-navy/70 text-sm">
-            {dict.auth.check_email}
-          </div>
-        )}
 
         <h2 className="text-gold text-xs uppercase tracking-widest mb-5">
           {dict.dashboard.my_submissions}

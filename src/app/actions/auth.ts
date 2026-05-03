@@ -34,7 +34,7 @@ export async function signup(formData: FormData) {
     redirect(`/${locale}/auth/signup?error=${encodeURIComponent(error.message)}`)
   }
 
-  redirect(`/${locale}/dashboard?message=check-email`)
+  redirect(`/${locale}/dashboard`)
 }
 
 export async function signout(formData: FormData) {
