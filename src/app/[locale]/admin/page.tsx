@@ -3,9 +3,10 @@ import { isValidLocale } from '@/i18n.config'
 import type { Locale } from '@/i18n.config'
 import { getDictionary } from '@/lib/dictionary'
 import { createClient } from '@/lib/supabase/server'
-import { approveComment, rejectComment, updateUserRole } from '@/app/actions/admin'
+import { approveComment, rejectComment } from '@/app/actions/admin'
 import AdminTabs from '@/components/AdminTabs'
 import SubmissionReview from '@/components/SubmissionReview'
+import RoleSelector from '@/components/RoleSelector'
 import type { Submission } from '@/types/submission'
 import type { Comment } from '@/types/comment'
 import type { Profile } from '@/types/profile'
@@ -56,7 +57,6 @@ export default async function AdminPage({ params }: { params: { locale: string }
     collapse: isAr ? 'أخفِ' : 'Collapse',
   }
 
-  const roles = ['reader', 'contributor', 'editor', 'admin']
   const roleColour: Record<string, string> = {
     reader: 'text-navy/40 bg-navy/5',
     contributor: 'text-blue-700 bg-blue-50',
@@ -176,17 +176,7 @@ export default async function AdminPage({ params }: { params: { locale: string }
                 <span className={`text-xs px-2 py-1 flex-shrink-0 ${roleColour[u.role] ?? 'text-navy/40 bg-navy/5'}`}>
                   {u.role}
                 </span>
-                <form action={updateUserRole} className="flex-shrink-0">
-                  <input type="hidden" name="id" value={u.id} />
-                  <select
-                    name="role"
-                    defaultValue={u.role}
-                    onChange={e => (e.target.form as HTMLFormElement).requestSubmit()}
-                    className="text-xs border border-navy/15 px-2 py-1.5 text-navy focus:outline-none focus:border-gold bg-white"
-                  >
-                    {roles.map(r => <option key={r} value={r}>{r}</option>)}
-                  </select>
-                </form>
+                <RoleSelector userId={u.id} currentRole={u.role} />
               </div>
             ))}
           </div>
