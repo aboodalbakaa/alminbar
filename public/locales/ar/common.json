@@ -63,6 +63,65 @@
       "لغة عربية فصيحة أو إنجليزية سليمة",
       "الطول المثالي: 600-1200 كلمة",
       "الموضوع: الشأن العراقي السياسي والاقتصادي والاجتماعي"
-    ]
+    ],
+    "login_prompt": "أنشئ حساباً أو سجّل دخولك لإرسال مقالتك مباشرة",
+    "form_title_ar": "العنوان بالعربية",
+    "form_title_en": "العنوان بالإنجليزية (اختياري)",
+    "form_excerpt_ar": "الملخص بالعربية (اختياري)",
+    "form_excerpt_en": "الملخص بالإنجليزية (اختياري)",
+    "form_content_ar": "نص المقالة بالعربية",
+    "form_content_en": "نص المقالة بالإنجليزية (اختياري)",
+    "form_topic_ar": "الموضوع بالعربية",
+    "form_topic_en": "الموضوع بالإنجليزية",
+    "form_save_draft": "حفظ مسودة",
+    "form_submit": "إرسال للمراجعة"
+  },
+  "auth": {
+    "login": "دخول",
+    "logout": "خروج",
+    "signup": "إنشاء حساب",
+    "admin_panel": "الإدارة",
+    "email": "البريد الإلكتروني",
+    "password": "كلمة المرور",
+    "password_hint": "٨ أحرف على الأقل",
+    "display_name": "الاسم المعروض",
+    "login_title": "مرحباً بعودتك",
+    "login_subtitle": "سجّل دخولك للمساهمة في المنبر",
+    "signup_title": "انضم إلى المنبر",
+    "signup_subtitle": "أنشئ حساباً لإرسال المقالات والتعليق",
+    "login_submit": "تسجيل الدخول",
+    "signup_submit": "إنشاء الحساب",
+    "no_account": "ليس لديك حساب؟",
+    "have_account": "لديك حساب بالفعل؟",
+    "check_email": "تحقق من بريدك الإلكتروني لتفعيل حسابك.",
+    "error_invalid": "البريد الإلكتروني أو كلمة المرور غير صحيحة."
+  },
+  "dashboard": {
+    "title": "لوحة تحكمي",
+    "my_submissions": "مقالاتي",
+    "new_submission": "مقالة جديدة",
+    "no_submissions": "لم ترسل أي مقالات بعد.",
+    "status_draft": "مسودة",
+    "status_pending": "قيد المراجعة",
+    "status_approved": "مقبولة",
+    "status_rejected": "مرفوضة",
+    "status_published": "منشورة"
+  },
+  "admin": {
+    "title": "لوحة الإدارة",
+    "pending_submissions": "المقالات المعلقة",
+    "pending_comments": "التعليقات المعلقة",
+    "approve": "قبول",
+    "reject": "رفض",
+    "no_pending": "لا يوجد محتوى معلق.",
+    "rejection_reason": "سبب الرفض (اختياري)"
+  },
+  "comments": {
+    "title": "التعليقات",
+    "write_comment": "أضف تعليقاً",
+    "submit": "نشر التعليق",
+    "login_to_comment": "سجّل دخولك للتعليق —",
+    "pending_notice": "تعليقك سيظهر بعد المراجعة.",
+    "no_comments": "لا توجد تعليقات بعد. كن أول من يعلّق."
   }
 }

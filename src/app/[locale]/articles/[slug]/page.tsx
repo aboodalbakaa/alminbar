@@ -7,6 +7,9 @@ import type { Locale } from '@/i18n.config'
 import { getDictionary } from '@/lib/dictionary'
 import { getAllArticles, getArticleBySlug, getArticleSlugs } from '@/lib/articles'
 import LazySummary from '@/components/LazySummary'
+import CommentsSection from '@/components/CommentsSection'
+
+export const dynamic = 'force-dynamic'
 
 export function generateStaticParams() {
   const slugs = getArticleSlugs()
@@ -148,6 +151,8 @@ export default async function ArticlePage({
             </div>
           </div>
         </div>
+
+        <CommentsSection locale={locale} dict={dict} articleSlug={params.slug} />
       </div>
     </div>
   )

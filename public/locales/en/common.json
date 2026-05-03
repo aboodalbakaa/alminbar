@@ -63,6 +63,65 @@
       "Sound Arabic or English prose",
       "Ideal length: 600–1200 words",
       "Subject: Iraqi political, economic, and social affairs"
-    ]
+    ],
+    "login_prompt": "Create an account or sign in to submit your article directly",
+    "form_title_ar": "Title in Arabic",
+    "form_title_en": "Title in English (optional)",
+    "form_excerpt_ar": "Summary in Arabic (optional)",
+    "form_excerpt_en": "Summary in English (optional)",
+    "form_content_ar": "Article body in Arabic",
+    "form_content_en": "Article body in English (optional)",
+    "form_topic_ar": "Topic (Arabic)",
+    "form_topic_en": "Topic (English)",
+    "form_save_draft": "Save Draft",
+    "form_submit": "Submit for Review"
+  },
+  "auth": {
+    "login": "Sign In",
+    "logout": "Sign Out",
+    "signup": "Create Account",
+    "admin_panel": "Admin",
+    "email": "Email Address",
+    "password": "Password",
+    "password_hint": "Minimum 8 characters",
+    "display_name": "Display Name",
+    "login_title": "Welcome back",
+    "login_subtitle": "Sign in to contribute to Al-Minbar",
+    "signup_title": "Join Al-Minbar",
+    "signup_subtitle": "Create an account to submit articles and comment",
+    "login_submit": "Sign In",
+    "signup_submit": "Create Account",
+    "no_account": "Don't have an account?",
+    "have_account": "Already have an account?",
+    "check_email": "Check your email to confirm your account.",
+    "error_invalid": "Invalid email or password."
+  },
+  "dashboard": {
+    "title": "My Dashboard",
+    "my_submissions": "My Submissions",
+    "new_submission": "New Article",
+    "no_submissions": "You haven't submitted any articles yet.",
+    "status_draft": "Draft",
+    "status_pending": "Under Review",
+    "status_approved": "Approved",
+    "status_rejected": "Rejected",
+    "status_published": "Published"
+  },
+  "admin": {
+    "title": "Admin Panel",
+    "pending_submissions": "Pending Submissions",
+    "pending_comments": "Pending Comments",
+    "approve": "Approve",
+    "reject": "Reject",
+    "no_pending": "Nothing pending.",
+    "rejection_reason": "Rejection reason (optional)"
+  },
+  "comments": {
+    "title": "Comments",
+    "write_comment": "Add a comment",
+    "submit": "Post Comment",
+    "login_to_comment": "Sign in to leave a comment —",
+    "pending_notice": "Your comment will appear after review.",
+    "no_comments": "No comments yet. Be the first."
   }
 }

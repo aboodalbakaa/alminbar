@@ -3,6 +3,7 @@ import type { Locale } from '@/i18n.config'
 import type { Dictionary } from '@/lib/dictionary'
 import LanguageSwitcher from './LanguageSwitcher'
 import ZigguratLogo from './ZigguratLogo'
+import AuthNav from './AuthNav'
 
 interface Props {
   locale: Locale
@@ -27,10 +28,13 @@ export default function Header({ locale, dict }: Props) {
           <span className="text-white/40 text-xs tracking-widest uppercase select-none">
             {isAr ? 'منبر للفكر السياسي العراقي' : 'Iraqi Political Thought'}
           </span>
-          <LanguageSwitcher
-            currentLocale={locale}
-            label={dict.language.switch_to}
-          />
+          <div className="flex items-center gap-4">
+            <AuthNav locale={locale} dict={dict} />
+            <LanguageSwitcher
+              currentLocale={locale}
+              label={dict.language.switch_to}
+            />
+          </div>
         </div>
       </div>
 
