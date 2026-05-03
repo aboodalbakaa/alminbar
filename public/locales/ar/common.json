@@ -74,7 +74,9 @@
     "form_topic_ar": "الموضوع بالعربية",
     "form_topic_en": "الموضوع بالإنجليزية",
     "form_save_draft": "حفظ مسودة",
-    "form_submit": "إرسال للمراجعة"
+    "form_submit": "إرسال للمراجعة",
+    "edit_title": "تعديل المقالة",
+    "rejected_reason": "سبب الرفض"
   },
   "auth": {
     "login": "دخول",
@@ -105,7 +107,8 @@
     "status_pending": "قيد المراجعة",
     "status_approved": "مقبولة",
     "status_rejected": "مرفوضة",
-    "status_published": "منشورة"
+    "status_published": "منشورة",
+    "edit": "تعديل"
   },
   "admin": {
     "title": "لوحة الإدارة",

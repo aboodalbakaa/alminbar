@@ -74,7 +74,9 @@
     "form_topic_ar": "Topic (Arabic)",
     "form_topic_en": "Topic (English)",
     "form_save_draft": "Save Draft",
-    "form_submit": "Submit for Review"
+    "form_submit": "Submit for Review",
+    "edit_title": "Edit Article",
+    "rejected_reason": "Rejection reason"
   },
   "auth": {
     "login": "Sign In",
@@ -105,7 +107,8 @@
     "status_pending": "Under Review",
     "status_approved": "Approved",
     "status_rejected": "Rejected",
-    "status_published": "Published"
+    "status_published": "Published",
+    "edit": "Edit"
   },
   "admin": {
     "title": "Admin Panel",

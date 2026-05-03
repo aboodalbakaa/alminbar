@@ -1,5 +1,5 @@
 'use client'
-import { createSubmission } from '@/app/actions/submit'
+import { createSubmission, updateSubmission } from '@/app/actions/submit'
 import { useSearchParams } from 'next/navigation'
 import type { Locale } from '@/i18n.config'
 import type { Dictionary } from '@/lib/dictionary'
@@ -32,7 +32,7 @@ export default function SubmitForm({ locale, dict, draft }: Props) {
   const isAr = locale === 'ar'
 
   return (
-    <form action={createSubmission} className="space-y-8">
+    <form action={draft ? updateSubmission : createSubmission} className="space-y-8">
       <input type="hidden" name="locale" value={locale} />
       {draft && <input type="hidden" name="id" value={draft.id} />}
 

@@ -1,5 +1,6 @@
 import { notFound, redirect } from 'next/navigation'
 import Link from 'next/link'
+import type { Metadata } from 'next'
 import { isValidLocale } from '@/i18n.config'
 import type { Locale } from '@/i18n.config'
 import { getDictionary } from '@/lib/dictionary'
@@ -91,6 +92,17 @@ export default async function DashboardPage({ params }: { params: { locale: stri
                     <p className="text-red-600 text-xs mt-3 border-t border-red-100 pt-3">
                       {sub.rejection_reason}
                     </p>
+                  )}
+
+                  {['draft', 'rejected'].includes(sub.status) && (
+                    <div className="mt-3 pt-3 border-t border-navy/10">
+                      <Link
+                        href={`/${locale}/submit/edit/${sub.id}`}
+                        className="text-gold hover:text-gold-dark text-xs transition-colors duration-200"
+                      >
+                        {dict.dashboard.edit} →
+                      </Link>
+                    </div>
                   )}
                 </div>
               )
