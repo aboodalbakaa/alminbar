@@ -38,9 +38,9 @@ export default async function AdminPage({ params }: { params: { locale: string }
     { count: totalPublished },
     { count: totalComments },
   ] = await Promise.all([
-    admin.from('submissions').select('*, profiles(display_name)')
+    admin.from('submissions').select('*, profiles!submissions_author_id_fkey(display_name)')
       .in('status', ['pending', 'draft']).order('created_at', { ascending: true }),
-    admin.from('comments').select('*, profiles(display_name)')
+    admin.from('comments').select('*, profiles!comments_author_id_fkey(display_name)')
       .eq('status', 'pending').order('created_at', { ascending: true }),
     admin.from('profiles').select('*').order('created_at', { ascending: false }),
     admin.from('profiles').select('*', { count: 'exact', head: true }),
