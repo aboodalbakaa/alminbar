@@ -162,20 +162,6 @@ export default function TweaksPanel() {
             ))}
           </div>
 
-          {/* Hero variant */}
-          <span style={labelStyle}>Hero</span>
-          <div style={rowStyle}>
-            {(['lead', 'manifesto', 'masthead'] as const).map(v => (
-              <button
-                key={v}
-                style={tweaks.heroVariant === v ? chipActive : chipBase}
-                onClick={() => setTweaks({ heroVariant: v })}
-              >
-                {v}
-              </button>
-            ))}
-          </div>
-
           {/* Density */}
           <span style={labelStyle}>Density</span>
           <div style={rowStyle}>

@@ -118,19 +118,6 @@ export default async function CoverPage({
         textAlign: 'center',
         gap: '1.5rem',
       }}>
-        {/* Issue stamp */}
-        <span style={{
-          fontFamily: 'ui-monospace, monospace',
-          fontSize: '0.6rem',
-          letterSpacing: '0.18em',
-          textTransform: 'uppercase',
-          color: 'rgba(184,146,58,0.55)',
-          border: '1px solid rgba(184,146,58,0.25)',
-          padding: '0.2rem 0.6rem',
-        }}>
-          {isAr ? 'العدد ١٤ • ربيع ٢٠٢٦' : 'Issue 14 · Spring 2026'}
-        </span>
-
         {/* Ziggurat crest */}
         <ZigguratLogo
           width={96}

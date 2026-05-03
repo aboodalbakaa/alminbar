@@ -47,11 +47,6 @@ export default function Header({ locale, dict }: Props) {
           className="inline-flex flex-col items-center group"
           aria-label={dict.site.name}
         >
-          {/* Issue stamp above crest */}
-          <span className="issue-stamp" lang={isAr ? 'ar' : 'en'}>
-            {isAr ? 'العدد ١٤ • ربيع ٢٠٢٦' : 'Issue 14 · Spring 2026'}
-          </span>
-
           {/* Ziggurat of Ur — زقورة أور، ذي قار */}
           <ZigguratLogo
             width={88}

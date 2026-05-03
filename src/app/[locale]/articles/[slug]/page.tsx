@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 import type { Metadata } from 'next'
 import { MDXRemote } from 'next-mdx-remote/rsc'
 import { isValidLocale, locales } from '@/i18n.config'
@@ -7,6 +8,7 @@ import type { Locale } from '@/i18n.config'
 import { getDictionary } from '@/lib/dictionary'
 import { getAllArticles, getArticleBySlug, getArticleSlugs } from '@/lib/articles'
 import { getDbArticleById, getAllDbArticles } from '@/lib/supabase/articles'
+import { createAdminClient } from '@/lib/supabase/admin'
 import LazySummary from '@/components/LazySummary'
 import YouTubeEmbed from '@/components/YouTubeEmbed'
 import LiveComments from '@/components/LiveComments'
@@ -91,7 +93,8 @@ export default async function ArticlePage({
   }
 
   const supabase = createClient()
-  const [dict, { data: { user } }, { data: rawComments }, mdxArticles, dbArticles] = await Promise.all([
+  const admin = createAdminClient()
+  const [dict, { data: { user } }, { data: rawComments }, mdxArticles, dbArticles, { data: authorProfile }] = await Promise.all([
     getDictionary(locale),
     supabase.auth.getUser(),
     supabase
@@ -102,6 +105,9 @@ export default async function ArticlePage({
       .order('created_at', { ascending: true }),
     Promise.resolve(getAllArticles()),
     getAllDbArticles(),
+    article.author_id
+      ? admin.from('profiles').select('display_name, bio_ar, bio_en, avatar_url').eq('id', article.author_id).single()
+      : Promise.resolve({ data: null }),
   ])
 
   const currentTopic = article.topic_en || article.topic_ar
@@ -201,21 +207,45 @@ export default async function ArticlePage({
           </div>
 
           {/* Author bio */}
-          <div className="mt-10 pt-8 border-t border-gold/20">
-            <div className="flex items-start gap-4">
-              <div className="w-12 h-12 rounded-full bg-navy/10 flex items-center justify-center flex-shrink-0">
-                <span className="text-navy/40 text-lg font-arabic">ط</span>
-              </div>
-              <div>
-                <p className="text-navy font-semibold text-sm mb-1">
-                  {article.author}
-                </p>
-                <p className="text-navy/55 text-sm leading-relaxed">
-                  {dict.about.tariq_bio}
-                </p>
+          {(authorProfile || article.author) && (
+            <div className="mt-10 pt-8 border-t border-gold/20">
+              <div className="flex items-start gap-4">
+                <div className="w-12 h-12 rounded-full bg-navy/10 flex items-center justify-center flex-shrink-0 overflow-hidden flex-shrink-0">
+                  {authorProfile?.avatar_url ? (
+                    <Image
+                      src={authorProfile.avatar_url}
+                      alt={article.author}
+                      width={48}
+                      height={48}
+                      className="object-cover w-full h-full"
+                      unoptimized
+                    />
+                  ) : (
+                    <span className="text-navy/40 text-lg font-semibold select-none">
+                      {article.author?.[0]?.toUpperCase() ?? '؟'}
+                    </span>
+                  )}
+                </div>
+                <div>
+                  {article.author_id ? (
+                    <Link
+                      href={`/${locale}/writers/${article.author_id}`}
+                      className="text-navy font-semibold text-sm mb-1 hover:text-gold transition-colors block"
+                    >
+                      {article.author}
+                    </Link>
+                  ) : (
+                    <p className="text-navy font-semibold text-sm mb-1">{article.author}</p>
+                  )}
+                  {(isAr ? authorProfile?.bio_ar : authorProfile?.bio_en) && (
+                    <p className={`text-navy/55 text-sm leading-relaxed ${isAr ? 'font-arabic' : ''}`}>
+                      {isAr ? authorProfile?.bio_ar : authorProfile?.bio_en}
+                    </p>
+                  )}
+                </div>
               </div>
             </div>
-          </div>
+          )}
 
           {/* Related articles */}
           {relatedArticles.length > 0 && (
