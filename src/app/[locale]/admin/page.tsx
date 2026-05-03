@@ -3,6 +3,7 @@ import { isValidLocale } from '@/i18n.config'
 import type { Locale } from '@/i18n.config'
 import { getDictionary } from '@/lib/dictionary'
 import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { approveComment, rejectComment } from '@/app/actions/admin'
 import AdminTabs from '@/components/AdminTabs'
 import SubmissionReview from '@/components/SubmissionReview'
@@ -27,6 +28,8 @@ export default async function AdminPage({ params }: { params: { locale: string }
     .from('profiles').select('role').eq('id', user.id).single()
   if (profile?.role !== 'admin') notFound()
 
+  const admin = createAdminClient()
+
   const [
     { data: pendingSubs },
     { data: pendingComments },
@@ -35,14 +38,14 @@ export default async function AdminPage({ params }: { params: { locale: string }
     { count: totalPublished },
     { count: totalComments },
   ] = await Promise.all([
-    supabase.from('submissions').select('*, profiles(display_name)')
+    admin.from('submissions').select('*, profiles(display_name)')
       .in('status', ['pending', 'draft']).order('created_at', { ascending: true }),
-    supabase.from('comments').select('*, profiles(display_name)')
+    admin.from('comments').select('*, profiles(display_name)')
       .eq('status', 'pending').order('created_at', { ascending: true }),
-    supabase.from('profiles').select('*').order('created_at', { ascending: false }),
-    supabase.from('profiles').select('*', { count: 'exact', head: true }),
-    supabase.from('submissions').select('*', { count: 'exact', head: true }).eq('status', 'approved'),
-    supabase.from('comments').select('*', { count: 'exact', head: true }).eq('status', 'approved'),
+    admin.from('profiles').select('*').order('created_at', { ascending: false }),
+    admin.from('profiles').select('*', { count: 'exact', head: true }),
+    admin.from('submissions').select('*', { count: 'exact', head: true }).eq('status', 'approved'),
+    admin.from('comments').select('*', { count: 'exact', head: true }).eq('status', 'approved'),
   ])
 
   const subs = (pendingSubs ?? []) as Submission[]
