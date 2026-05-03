@@ -144,7 +144,7 @@ export default async function AdminPage({ params }: { params: { locale: string }
                     <span className={`text-xs px-2 py-1 flex-shrink-0 ${statusColour[a.status] ?? 'text-navy/40 bg-navy/5'}`}>
                       {a.status}
                     </span>
-                    <DeleteSubmissionButton id={a.id} locale={locale} />
+                    <DeleteSubmissionButton id={a.id} locale={locale} redirectTo={`/${locale}/admin`} />
                   </div>
                 )
               })

@@ -1,6 +1,8 @@
 'use server'
 import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { revalidatePath } from 'next/cache'
+import { redirect } from 'next/navigation'
 
 async function assertAdmin() {
   const supabase = createClient()
@@ -74,22 +76,21 @@ export async function deleteSubmission(formData: FormData) {
 
   const id = formData.get('id') as string
   const locale = (formData.get('locale') as string) || 'ar'
+  const redirectTo = (formData.get('redirect_to') as string) || `/${locale}/dashboard`
 
   const { data: profile } = await supabase
     .from('profiles').select('role').eq('id', user.id).single()
   const isAdmin = profile?.role === 'admin'
 
   if (isAdmin) {
-    await supabase.from('submissions').delete().eq('id', id)
+    // admin client bypasses RLS — can delete anything
+    const adminClient = createAdminClient()
+    await adminClient.from('submissions').delete().eq('id', id)
   } else {
-    await supabase.from('submissions').delete().eq('id', id).eq('author_id', user.id)
+    // regular client — DELETE RLS policy ensures author can only delete their own
+    const { error } = await supabase.from('submissions').delete().eq('id', id).eq('author_id', user.id)
+    if (error) throw new Error(error.message)
   }
 
-  revalidatePath(`/${locale}/dashboard`)
-  revalidatePath('/ar/admin')
-  revalidatePath('/en/admin')
-  revalidatePath('/ar/articles')
-  revalidatePath('/en/articles')
-  revalidatePath('/ar')
-  revalidatePath('/en')
+  redirect(redirectTo)
 }

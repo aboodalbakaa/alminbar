@@ -106,7 +106,7 @@ export default async function DashboardPage({ params }: { params: { locale: stri
                         </Link>
                       )}
                     </div>
-                    <DeleteSubmissionButton id={sub.id} locale={locale} />
+                    <DeleteSubmissionButton id={sub.id} locale={locale} redirectTo={`/${locale}/dashboard`} />
                   </div>
                 </div>
               )
