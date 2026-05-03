@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import type { Locale } from '@/i18n.config'
 import type { Dictionary } from '@/lib/dictionary'
+import ZigDivider from './ZigDivider'
 
 interface Props {
   locale: Locale
@@ -15,13 +16,17 @@ export default function Footer({ locale, dict }: Props) {
     <footer className="bg-navy text-white mt-auto">
       <div className="border-t border-gold/20">
         <div className="max-w-5xl mx-auto px-6 py-12">
-          <div className="text-center mb-10">
+          <div className="text-center mb-8">
             <p
-              className={`text-gold mb-2 ${isAr ? 'font-arabic text-2xl' : 'font-heading text-xl'}`}
+              className={`text-gold mb-2 ${isAr ? 'font-arabic text-2xl' : 'font-heading text-xl italic'}`}
             >
               {dict.footer.tagline}
             </p>
             <p className="text-white/50 text-sm">{dict.footer.tagline_sub}</p>
+          </div>
+
+          <div className="text-gold mb-8">
+            <ZigDivider />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 border-t border-white/10 pt-8">

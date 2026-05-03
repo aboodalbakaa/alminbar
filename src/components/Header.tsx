@@ -3,6 +3,7 @@ import type { Locale } from '@/i18n.config'
 import type { Dictionary } from '@/lib/dictionary'
 import LanguageSwitcher from './LanguageSwitcher'
 import ZigguratLogo from './ZigguratLogo'
+import ZigDivider from './ZigDivider'
 import AuthNav from './AuthNav'
 
 interface Props {
@@ -45,6 +46,11 @@ export default function Header({ locale, dict }: Props) {
           className="inline-flex flex-col items-center group"
           aria-label={dict.site.name}
         >
+          {/* Issue stamp above crest */}
+          <span className="issue-stamp" lang={isAr ? 'ar' : 'en'}>
+            {isAr ? 'العدد ١٤ • ربيع ٢٠٢٦' : 'Issue 14 · Spring 2026'}
+          </span>
+
           {/* Ziggurat of Ur — زقورة أور، ذي قار */}
           <ZigguratLogo
             width={88}
@@ -56,20 +62,20 @@ export default function Header({ locale, dict }: Props) {
             className={`text-gold leading-none tracking-tight group-hover:text-gold-light transition-colors duration-200 ${
               isAr
                 ? 'font-arabic text-5xl md:text-6xl'
-                : 'font-heading text-4xl md:text-5xl'
+                : 'font-heading text-4xl md:text-5xl italic'
             }`}
           >
             {dict.site.name}
           </h1>
         </Link>
 
-        <div className="mt-3 flex items-center justify-center gap-4">
-          <div className="h-px flex-1 bg-gold/20 max-w-24" />
-          <p className="text-white/50 text-xs tracking-widest uppercase">
-            {dict.site.tagline}
-          </p>
-          <div className="h-px flex-1 bg-gold/20 max-w-24" />
+        <div className="mt-4 max-w-sm mx-auto text-gold">
+          <ZigDivider />
         </div>
+
+        <p className="text-white/50 text-xs tracking-widest uppercase mt-3">
+          {dict.site.tagline}
+        </p>
       </div>
 
       {/* Navigation */}

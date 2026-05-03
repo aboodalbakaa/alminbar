@@ -2,6 +2,22 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --ink: #1B2A4A;
+  --ink-soft: #4A5878;
+  --ink-faint: #8794AB;
+  --clay: #FAFAF6;
+  --clay-deep: #F1ECDF;
+  --clay-line: #E4DCC9;
+  --gold: #B8923A;
+  --gold-soft: #D4B76A;
+  --gold-faint: rgba(184,146,58,0.18);
+  --terracotta: #8B3A2F;
+  --font-ar-display: var(--font-arabic), serif;
+  --font-en-display: var(--font-heading), Georgia, serif;
+  --font-mono-stack: var(--font-mono), ui-monospace, monospace;
+}
+
 @layer base {
   html[lang='ar'] body {
     font-family: var(--font-arabic), 'Noto Naskh Arabic', serif;
@@ -53,6 +69,181 @@
   }
 
   .btn-outline {
-    @apply inline-block border border-gold/60 text-gold px-6 py-3 hover:border-gold hover:text-gold-light transition-colors duration-200;
+    @apply inline-block border border-gold/60 text-gold px-6 py-3 hover:border-gold hover:text-gold-soft transition-colors duration-200;
   }
+}
+
+/* Accent overrides (set by TweaksPanel via body data-accent) */
+body[data-accent="brass"] { --gold: #9A7C36; --gold-soft: #B89858; }
+body[data-accent="copper"] { --gold: #A35E3F; --gold-soft: #C68263; }
+body[data-density="compact"] { font-size: 1rem; }
+
+/* Mesopotamian tessellation watermark */
+.tessellation {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 160 160' width='160' height='160'><g fill='none' stroke='%23B8923A' stroke-width='0.7' opacity='0.85'><g transform='translate(80 80)'><circle r='3'/><circle r='9'/><circle r='22'/><g><ellipse cx='0' cy='-15' rx='4.5' ry='13'/><ellipse cx='0' cy='-15' rx='4.5' ry='13' transform='rotate(45)'/><ellipse cx='0' cy='-15' rx='4.5' ry='13' transform='rotate(90)'/><ellipse cx='0' cy='-15' rx='4.5' ry='13' transform='rotate(135)'/><ellipse cx='0' cy='-15' rx='4.5' ry='13' transform='rotate(180)'/><ellipse cx='0' cy='-15' rx='4.5' ry='13' transform='rotate(225)'/><ellipse cx='0' cy='-15' rx='4.5' ry='13' transform='rotate(270)'/><ellipse cx='0' cy='-15' rx='4.5' ry='13' transform='rotate(315)'/></g><g stroke-width='0.4' opacity='0.7'><line x1='0' y1='-22' x2='0' y2='-32'/><line x1='0' y1='22' x2='0' y2='32'/><line x1='-22' y1='0' x2='-32' y2='0'/><line x1='22' y1='0' x2='32' y2='0'/><line x1='-15.5' y1='-15.5' x2='-22.6' y2='-22.6'/><line x1='15.5' y1='-15.5' x2='22.6' y2='-22.6'/><line x1='-15.5' y1='15.5' x2='-22.6' y2='22.6'/><line x1='15.5' y1='15.5' x2='22.6' y2='22.6'/></g></g></g></svg>"),
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 80' width='80' height='80'><g fill='%23B8923A' opacity='0.32'><path d='M8 12 L14 14 L8 16 Z'/><path d='M16 12 L22 14 L16 16 Z'/><path d='M8 20 L14 22 L8 24 Z'/><path d='M58 56 L64 58 L58 60 Z'/><path d='M66 56 L72 58 L66 60 Z'/><path d='M58 64 L64 66 L58 68 Z'/></g><g fill='none' stroke='%23B8923A' stroke-width='0.55' opacity='0.5'><path d='M40 36 L40 30 L46 30 L46 24 L52 24'/><path d='M40 44 L40 50 L34 50 L34 56 L28 56'/></g></svg>");
+  background-size: 160px 160px, 80px 80px;
+  background-position: 0 0, 40px 40px;
+  opacity: 0;
+  transition: opacity 0.4s;
+  mix-blend-mode: multiply;
+}
+body[data-tessellation="on"] .tessellation { opacity: 1; }
+.tessellation-dark { mix-blend-mode: screen; }
+
+/* Zig divider */
+.zig-divider {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  width: 100%;
+  color: var(--gold);
+}
+.zig-divider .rule {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--gold-faint, rgba(184,146,58,0.18)) 30%, var(--gold) 50%, var(--gold-faint, rgba(184,146,58,0.18)) 70%, transparent);
+}
+
+/* Drop cap */
+.drop-cap::first-letter {
+  font-weight: 600;
+  float: left;
+  font-size: 4.5em;
+  line-height: 0.85;
+  padding: 0.12em 0.18em 0.05em;
+  margin: 0.08em 0.5rem 0 0;
+  background: var(--terracotta);
+  color: var(--clay);
+}
+[dir="rtl"] .drop-cap::first-letter {
+  float: right;
+  margin: 0.08em 0 0 0.5rem;
+}
+
+/* Colophon */
+.colophon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem;
+  margin: 3rem auto 0;
+  color: var(--gold);
+}
+.colophon .rule { width: 4rem; height: 1px; background: var(--gold-faint, rgba(184,146,58,0.18)); }
+.colophon .diamond { width: 8px; height: 8px; background: var(--ink); transform: rotate(45deg); }
+
+/* Article bandeau */
+.article-bandeau {
+  background: #F1ECDF;
+  border-bottom: 1px solid #E4DCC9;
+  padding: 3rem 1.5rem 2.5rem;
+  text-align: center;
+}
+.article-bandeau .topic-kicker {
+  font-size: 0.72rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--terracotta);
+  margin-bottom: 1rem;
+  font-family: var(--font-mono-stack);
+}
+[lang="ar"] .article-bandeau .topic-kicker {
+  font-family: var(--font-ar-display);
+  letter-spacing: 0.05em;
+  text-transform: none;
+  font-size: 0.92rem;
+  font-weight: 700;
+}
+
+/* Eyebrow utility */
+.eyebrow {
+  font-family: var(--font-mono-stack);
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--gold);
+  font-weight: 500;
+}
+[lang="ar"] .eyebrow { letter-spacing: 0.08em; }
+
+/* TL;DR block (new design) */
+.tldr-block {
+  border: 1px solid #E4DCC9;
+  background: #F1ECDF;
+  margin-bottom: 2.5rem;
+  position: relative;
+}
+.tldr-block::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: var(--terracotta);
+}
+.tldr-block .tldr-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.2rem 1.4rem 0.9rem;
+  border-bottom: 1px solid #E4DCC9;
+  cursor: pointer;
+  background: none;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  width: 100%;
+  text-align: inherit;
+}
+.tldr-block ol {
+  list-style: none;
+  padding: 1rem 1.4rem 1.4rem;
+  margin: 0;
+  counter-reset: tldr;
+}
+.tldr-block li {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.7rem;
+  padding: 0.7rem 0;
+  border-bottom: 1px dashed #E4DCC9;
+  counter-increment: tldr;
+  font-size: 0.92rem;
+  line-height: 1.6;
+  color: #4A5878;
+}
+.tldr-block li:last-child { border-bottom: none; }
+.tldr-block li::before {
+  content: counter(tldr, decimal);
+  font-family: var(--font-mono-stack);
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--gold);
+  min-width: 1.4rem;
+  border-top: 2px solid var(--gold);
+  padding-top: 0.15rem;
+  align-self: start;
+}
+
+/* Issue stamp in masthead */
+.issue-stamp {
+  font-family: var(--font-mono-stack);
+  font-size: 0.65rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(184,146,58,0.6);
+  border: 1px solid rgba(184,146,58,0.3);
+  padding: 0.25rem 0.6rem;
+  display: inline-block;
+  margin-bottom: 0.8rem;
+}
+[lang="ar"] .issue-stamp {
+  font-family: var(--font-ar-display);
+  letter-spacing: 0.04em;
+  text-transform: none;
+  font-size: 0.78rem;
 }

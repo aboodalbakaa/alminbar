@@ -6,6 +6,8 @@ import { getDictionary } from '@/lib/dictionary'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import HtmlAttributeSetter from '@/components/HtmlAttributeSetter'
+import BodyAttributeSetter from '@/components/BodyAttributeSetter'
+import TweaksPanel from '@/components/TweaksPanel'
 
 export function generateStaticParams() {
   return locales.map(locale => ({ locale }))
@@ -42,9 +44,11 @@ export default async function LocaleLayout({
   return (
     <>
       <HtmlAttributeSetter locale={locale} />
+      <BodyAttributeSetter />
       <Header locale={locale} dict={dict} />
       <main className="flex-1">{children}</main>
       <Footer locale={locale} dict={dict} />
+      <TweaksPanel />
     </>
   )
 }

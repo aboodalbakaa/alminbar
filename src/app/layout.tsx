@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { Noto_Naskh_Arabic, Playfair_Display, Inter } from 'next/font/google'
+import { Noto_Naskh_Arabic, Amiri, Cormorant_Garamond, Inter, JetBrains_Mono } from 'next/font/google'
 import './globals.css'
 
 const notoNaskhArabic = Noto_Naskh_Arabic({
@@ -9,9 +9,18 @@ const notoNaskhArabic = Noto_Naskh_Arabic({
   display: 'swap',
 })
 
-const playfairDisplay = Playfair_Display({
+const amiri = Amiri({
+  subsets: ['arabic'],
+  weight: ['400', '700'],
+  style: ['normal', 'italic'],
+  variable: '--font-ar-display',
+  display: 'swap',
+})
+
+const cormorantGaramond = Cormorant_Garamond({
   subsets: ['latin'],
-  weight: ['400', '500', '600', '700', '800'],
+  weight: ['300', '400', '500', '600', '700'],
+  style: ['italic', 'normal'],
   variable: '--font-heading',
   display: 'swap',
 })
@@ -19,6 +28,13 @@ const playfairDisplay = Playfair_Display({
 const inter = Inter({
   subsets: ['latin'],
   variable: '--font-body',
+  display: 'swap',
+})
+
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
+  variable: '--font-mono',
   display: 'swap',
 })
 
@@ -46,9 +62,9 @@ export default function RootLayout({
     <html
       lang="ar"
       dir="rtl"
-      className={`${notoNaskhArabic.variable} ${playfairDisplay.variable} ${inter.variable}`}
+      className={`${notoNaskhArabic.variable} ${amiri.variable} ${cormorantGaramond.variable} ${inter.variable} ${jetbrainsMono.variable}`}
     >
-      <body className="bg-cream text-navy min-h-screen flex flex-col antialiased">
+      <body className="bg-clay text-ink min-h-screen flex flex-col antialiased">
         {children}
       </body>
     </html>

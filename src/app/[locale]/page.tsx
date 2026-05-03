@@ -6,6 +6,8 @@ import { getDictionary } from '@/lib/dictionary'
 import { getAllArticles } from '@/lib/articles'
 import { getAllDbArticles } from '@/lib/supabase/articles'
 import ArticleCard from '@/components/ArticleCard'
+import ZigDivider from '@/components/ZigDivider'
+import ZigInline from '@/components/ZigInline'
 
 export const dynamic = 'force-dynamic'
 
@@ -31,49 +33,71 @@ export default async function HomePage({
 
   return (
     <>
-      {/* Hero */}
-      <section className="bg-navy text-white py-20 px-6">
-        <div className="max-w-3xl mx-auto text-center">
-          <p className="text-gold/70 text-sm uppercase tracking-widest mb-6">
-            {dict.hero.eyebrow}
-          </p>
-
-          <h2
-            className={`text-white leading-tight mb-6 whitespace-pre-line ${
-              isAr
-                ? 'font-arabic text-4xl md:text-5xl'
-                : 'font-heading text-3xl md:text-4xl'
-            }`}
-          >
-            {dict.hero.title}
-          </h2>
-
-          <div className="flex items-center justify-center gap-4 mb-8">
-            <div className="h-px flex-1 bg-gold/20 max-w-16" />
-            <div className="w-1.5 h-1.5 bg-gold/60 rotate-45" />
-            <div className="h-px flex-1 bg-gold/20 max-w-16" />
+      {/* Masthead Hero — "In this issue" contents index */}
+      <section
+        className="relative border-b py-10 px-6 overflow-hidden"
+        style={{ borderColor: 'var(--clay-line, #E4DCC9)', background: 'var(--clay, #FAFAF6)' }}
+      >
+        <div className="tessellation" />
+        <div className="max-w-5xl mx-auto" style={{ position: 'relative', zIndex: 1 }}>
+          <div className="text-center mb-8">
+            <p className="eyebrow">{isAr ? 'محتويات هذا العدد' : 'In this issue'}</p>
+            <div className="flex justify-center mt-2 text-gold">
+              <ZigInline size={14} />
+            </div>
           </div>
 
-          <p className="text-white/65 text-base md:text-lg leading-relaxed mb-10 max-w-2xl mx-auto">
-            {dict.hero.description}
-          </p>
+          {latestArticles.length > 0 && (
+            <div
+              className="grid border-t border-b"
+              style={{
+                gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+                borderColor: 'var(--clay-line, #E4DCC9)',
+              }}
+            >
+              {latestArticles.map((article, i) => (
+                <Link
+                  key={article.slug}
+                  href={`/${locale}/articles/${article.slug}`}
+                  className="block p-6 hover:bg-[#F1ECDF] transition-colors border-r last:border-r-0"
+                  style={{ borderColor: 'var(--clay-line, #E4DCC9)' }}
+                >
+                  <span
+                    className="block text-xs mb-2"
+                    style={{
+                      fontFamily: 'var(--font-mono-stack)',
+                      letterSpacing: '0.16em',
+                      textTransform: 'uppercase',
+                      color: 'var(--gold)',
+                    }}
+                  >
+                    {String(i + 1).padStart(2, '0')} · {isAr ? article.topic_ar : article.topic_en}
+                  </span>
+                  <h3
+                    className={`text-navy leading-snug font-bold ${isAr ? 'font-arabic text-base' : 'font-heading text-base italic'}`}
+                  >
+                    {isAr ? article.title_ar : article.title_en}
+                  </h3>
+                </Link>
+              ))}
+            </div>
+          )}
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link href={`/${locale}/articles`} className="btn-primary">
-              {dict.hero.cta_read}
-            </Link>
-            <Link href={`/${locale}/about`} className="btn-outline">
-              {dict.hero.cta_about}
-            </Link>
-          </div>
+          {latestArticles.length === 0 && (
+            <div className="text-center py-16 text-navy/40">
+              <p className="text-lg">{dict.articles.no_articles}</p>
+            </div>
+          )}
         </div>
       </section>
 
-      {/* Decorative rule */}
-      <div className="h-1 bg-gradient-to-r from-transparent via-gold/40 to-transparent" />
+      {/* ZigDivider between hero and articles */}
+      <div className="px-6 py-4 max-w-5xl mx-auto w-full text-gold">
+        <ZigDivider />
+      </div>
 
       {/* Latest Articles */}
-      <section className="py-16 px-6">
+      <section className="py-12 px-6">
         <div className="max-w-5xl mx-auto">
           <div className="flex items-center justify-between mb-10">
             <h2 className="section-heading">{dict.articles.latest_title}</h2>
@@ -103,6 +127,57 @@ export default async function HomePage({
               ))}
             </div>
           )}
+        </div>
+      </section>
+
+      {/* Archive strip */}
+      <section className="py-12 px-6" style={{ background: '#F1ECDF', borderTop: '1px solid #E4DCC9' }}>
+        <div className="max-w-5xl mx-auto">
+          <div className="flex justify-between items-end mb-6">
+            <h2
+              className={`text-navy font-bold relative ${isAr ? 'font-arabic text-2xl' : 'font-heading text-xl italic'}`}
+              style={{ paddingBottom: '0.75rem', borderBottom: '2px solid var(--gold)' }}
+            >
+              {isAr ? 'من الأرشيف' : 'From the Archive'}
+            </h2>
+            <Link
+              href={`/${locale}/articles`}
+              className="text-sm"
+              style={{ color: 'var(--gold)' }}
+            >
+              {isAr ? 'كل المقالات ←' : 'All essays →'}
+            </Link>
+          </div>
+          <div className="divide-y" style={{ borderColor: '#E4DCC9' }}>
+            {articles.map(a => (
+              <Link
+                key={a.slug}
+                href={`/${locale}/articles/${a.slug}`}
+                className="flex items-center justify-between gap-4 py-3 hover:text-[#B8923A] transition-colors group"
+              >
+                <time
+                  className="text-xs flex-shrink-0"
+                  style={{ fontFamily: 'var(--font-mono-stack)', color: '#8794AB', letterSpacing: '0.1em' }}
+                >
+                  {new Date(a.date).toLocaleDateString(isAr ? 'ar-IQ' : 'en-GB', { year: 'numeric', month: 'short' })}
+                </time>
+                <span className={`flex-1 text-navy font-medium group-hover:text-[#B8923A] transition-colors ${isAr ? 'font-arabic' : ''}`}>
+                  {isAr ? a.title_ar : a.title_en}
+                </span>
+                <span
+                  className="text-xs flex-shrink-0"
+                  style={{
+                    fontFamily: 'var(--font-mono-stack)',
+                    letterSpacing: '0.1em',
+                    textTransform: 'uppercase',
+                    color: 'var(--gold)',
+                  }}
+                >
+                  {isAr ? a.topic_ar : a.topic_en}
+                </span>
+              </Link>
+            ))}
+          </div>
         </div>
       </section>
 

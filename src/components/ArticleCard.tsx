@@ -23,15 +23,27 @@ export default function ArticleCard({ article, locale, dict }: Props) {
   const title = isAr ? article.title_ar : article.title_en
   const excerpt = isAr ? article.excerpt_ar : article.excerpt_en
   const topic = isAr ? article.topic_ar : article.topic_en
+  const peek = isAr ? article.lazy_ar?.[0] : article.lazy_en?.[0]
 
   return (
     <article className="bg-white border border-gray-100 hover:border-gold/30 hover:shadow-md transition-all duration-200 group flex flex-col">
-      {/* Gold top accent */}
-      <div className="h-0.5 bg-gold w-full" />
+      {/* Terracotta top accent */}
+      <div className="h-0.5 w-full" style={{ background: 'var(--terracotta, #8B3A2F)' }} />
 
       <div className="p-6 flex flex-col flex-1">
-        {/* Topic badge */}
-        <div className="mb-3">
+        {/* Topic badge with terracotta diamond marker */}
+        <div className="mb-3 flex items-center gap-1">
+          <span
+            style={{
+              display: 'inline-block',
+              width: '5px',
+              height: '5px',
+              background: '#8B3A2F',
+              transform: 'rotate(45deg)',
+              marginInlineEnd: '0.4rem',
+              flexShrink: 0,
+            }}
+          />
           <span className="text-gold text-xs uppercase tracking-widest font-semibold">
             {topic}
           </span>
@@ -47,6 +59,35 @@ export default function ArticleCard({ article, locale, dict }: Props) {
             {title}
           </Link>
         </h2>
+
+        {/* TL;DR peek */}
+        {peek && (
+          <div style={{
+            background: '#F1ECDF',
+            borderInlineStart: '2px solid #8B3A2F',
+            padding: '0.6rem 0.8rem',
+            fontSize: '0.82rem',
+            color: '#4A5878',
+            lineHeight: 1.5,
+            marginBottom: '0.8rem',
+            fontStyle: isAr ? 'normal' : 'italic',
+          }}>
+            <span style={{
+              display: 'block',
+              fontFamily: 'var(--font-mono-stack)',
+              fontSize: '0.6rem',
+              letterSpacing: '0.16em',
+              textTransform: 'uppercase',
+              color: '#8B3A2F',
+              marginBottom: '0.25rem',
+              fontStyle: 'normal',
+              fontWeight: 600,
+            }}>
+              {isAr ? 'خلاصة' : 'TL;DR'}
+            </span>
+            {peek}
+          </div>
+        )}
 
         {/* Excerpt */}
         <p className="text-navy/65 text-sm leading-relaxed mb-4 flex-1 line-clamp-3">

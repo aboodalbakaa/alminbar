@@ -12,6 +12,8 @@ import YouTubeEmbed from '@/components/YouTubeEmbed'
 import LiveComments from '@/components/LiveComments'
 import ShareButtons from '@/components/ShareButtons'
 import ArticleCard from '@/components/ArticleCard'
+import ZigDivider from '@/components/ZigDivider'
+import Colophon from '@/components/Colophon'
 import { createClient } from '@/lib/supabase/server'
 import type { Comment } from '@/types/comment'
 
@@ -113,133 +115,132 @@ export default async function ArticlePage({
   const topic = isAr ? article.topic_ar : article.topic_en
 
   return (
-    <div className="py-12 px-6">
-      <div className="max-w-2xl mx-auto">
-        {/* Back link */}
-        <Link
-          href={`/${locale}/articles`}
-          className="inline-flex items-center gap-2 text-gold hover:text-gold-dark text-sm mb-10 transition-colors duration-200"
-        >
-          {isAr ? '→' : '←'} {dict.articles.back_to_articles}
-        </Link>
-
-        {/* Article header */}
-        <header className="mb-10 pb-8 border-b border-gold/20">
-          <div className="mb-4">
-            <span className="text-gold text-xs uppercase tracking-widest font-semibold">
-              {topic}
-            </span>
-          </div>
-
+    <div>
+      {/* Article bandeau */}
+      <div className="article-bandeau">
+        <div className="max-w-2xl mx-auto">
+          <div className="topic-kicker">{topic}</div>
           <h1
-            className={`text-navy leading-snug mb-6 ${
-              isAr ? 'font-arabic text-3xl md:text-4xl' : 'font-heading text-2xl md:text-3xl'
+            className={`text-navy leading-tight mb-6 ${
+              isAr ? 'font-arabic text-3xl md:text-4xl' : 'font-heading text-2xl md:text-3xl italic'
             }`}
           >
             {title}
           </h1>
-
-          <div className="flex items-center gap-4 text-navy/50 text-sm flex-wrap">
-            <span>
-              {dict.articles.by}{' '}
-              <span className="text-navy/80 font-medium">{article.author}</span>
-            </span>
-            <span>·</span>
+          <div className="flex justify-center mb-6" style={{ color: 'var(--gold)' }}>
+            <ZigDivider />
+          </div>
+          <div className="flex items-center justify-center gap-4 text-sm flex-wrap" style={{ color: '#4A5878' }}>
+            <span className="font-semibold text-navy">{article.author}</span>
+            <span className="w-1 h-1 rounded-full bg-[#8794AB]" />
             <time dateTime={article.date}>{formatDate(article.date, locale)}</time>
-            <span>·</span>
-            <span>
+            <span className="w-1 h-1 rounded-full bg-[#8794AB]" />
+            <span style={{ fontFamily: 'var(--font-mono-stack)', fontSize: '0.78rem', color: 'var(--gold)' }}>
               {article.readingTimeMinutes}{' '}
-              {article.readingTimeMinutes === 1
-                ? dict.articles.minute_read
-                : dict.articles.minutes_read}
+              {article.readingTimeMinutes === 1 ? dict.articles.minute_read : dict.articles.minutes_read}
             </span>
           </div>
-        </header>
+        </div>
+      </div>
 
-        {/* Lazy summary — shown when article has one */}
-        {((isAr && article.lazy_ar?.length) || (!isAr && article.lazy_en?.length)) && (
-          <LazySummary
-            points={(isAr ? article.lazy_ar : article.lazy_en) ?? []}
+      <div className="py-12 px-6">
+        <div className="max-w-2xl mx-auto">
+          {/* Back link */}
+          <Link
+            href={`/${locale}/articles`}
+            className="inline-flex items-center gap-2 text-gold hover:text-gold-dark text-sm mb-10 transition-colors duration-200"
+          >
+            {isAr ? '→' : '←'} {dict.articles.back_to_articles}
+          </Link>
+
+          {/* Lazy summary — shown when article has one */}
+          {((isAr && article.lazy_ar?.length) || (!isAr && article.lazy_en?.length)) && (
+            <LazySummary
+              points={(isAr ? article.lazy_ar : article.lazy_en) ?? []}
+              locale={locale}
+              labels={dict.lazy}
+            />
+          )}
+
+          {/* Article body */}
+          <div
+            className={`prose prose-lg max-w-none ${
+              isAr
+                ? 'prose-headings:font-arabic prose-headings:text-navy prose-p:font-arabic prose-p:leading-[1.9]'
+                : 'prose-headings:font-heading prose-p:font-body'
+            }`}
+          >
+            <MDXRemote source={article.content} components={{ YouTubeEmbed }} />
+          </div>
+
+          {/* Colophon after article body */}
+          <Colophon />
+
+          {/* YouTube embed for DB articles */}
+          {article.youtube_url && (
+            <div className="mt-8">
+              <YouTubeEmbed url={article.youtube_url} />
+            </div>
+          )}
+
+          {/* English translation for DB articles */}
+          {article.content_en && (
+            <div className="mt-12 pt-8 border-t border-gold/20">
+              <p className="text-gold text-xs uppercase tracking-widest font-semibold mb-6">
+                {dict.articles.english_translation}
+              </p>
+              <div className="prose prose-lg max-w-none prose-headings:font-heading prose-p:font-body">
+                <MDXRemote source={article.content_en} components={{ YouTubeEmbed }} />
+              </div>
+            </div>
+          )}
+
+          {/* Share buttons */}
+          <div className="mt-10 pt-8 border-t border-gold/20">
+            <ShareButtons title={title} locale={locale} dict={dict} />
+          </div>
+
+          {/* Author bio */}
+          <div className="mt-10 pt-8 border-t border-gold/20">
+            <div className="flex items-start gap-4">
+              <div className="w-12 h-12 rounded-full bg-navy/10 flex items-center justify-center flex-shrink-0">
+                <span className="text-navy/40 text-lg font-arabic">ط</span>
+              </div>
+              <div>
+                <p className="text-navy font-semibold text-sm mb-1">
+                  {article.author}
+                </p>
+                <p className="text-navy/55 text-sm leading-relaxed">
+                  {dict.about.tariq_bio}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Related articles */}
+          {relatedArticles.length > 0 && (
+            <div className="mt-14 pt-8 border-t border-gold/20">
+              <h2
+                className={`text-navy font-bold mb-6 ${isAr ? 'font-arabic text-xl' : 'font-heading text-lg'}`}
+              >
+                {dict.articles.related_title}
+              </h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {relatedArticles.map(a => (
+                  <ArticleCard key={a.slug} article={a} locale={locale} dict={dict} />
+                ))}
+              </div>
+            </div>
+          )}
+
+          <LiveComments
             locale={locale}
-            labels={dict.lazy}
+            dict={dict}
+            articleSlug={params.slug}
+            initialComments={initialComments}
+            userId={user?.id ?? null}
           />
-        )}
-
-        {/* Article body */}
-        <div
-          className={`prose prose-lg max-w-none ${
-            isAr
-              ? 'prose-headings:font-arabic prose-headings:text-navy prose-p:font-arabic prose-p:leading-[1.9]'
-              : 'prose-headings:font-heading prose-p:font-body'
-          }`}
-        >
-          <MDXRemote source={article.content} components={{ YouTubeEmbed }} />
         </div>
-
-        {/* YouTube embed for DB articles */}
-        {article.youtube_url && (
-          <div className="mt-8">
-            <YouTubeEmbed url={article.youtube_url} />
-          </div>
-        )}
-
-        {/* English translation for DB articles */}
-        {article.content_en && (
-          <div className="mt-12 pt-8 border-t border-gold/20">
-            <p className="text-gold text-xs uppercase tracking-widest font-semibold mb-6">
-              {dict.articles.english_translation}
-            </p>
-            <div className="prose prose-lg max-w-none prose-headings:font-heading prose-p:font-body">
-              <MDXRemote source={article.content_en} components={{ YouTubeEmbed }} />
-            </div>
-          </div>
-        )}
-
-        {/* Share buttons */}
-        <div className="mt-10 pt-8 border-t border-gold/20">
-          <ShareButtons title={title} locale={locale} dict={dict} />
-        </div>
-
-        {/* Author bio */}
-        <div className="mt-10 pt-8 border-t border-gold/20">
-          <div className="flex items-start gap-4">
-            <div className="w-12 h-12 rounded-full bg-navy/10 flex items-center justify-center flex-shrink-0">
-              <span className="text-navy/40 text-lg font-arabic">ط</span>
-            </div>
-            <div>
-              <p className="text-navy font-semibold text-sm mb-1">
-                {article.author}
-              </p>
-              <p className="text-navy/55 text-sm leading-relaxed">
-                {dict.about.tariq_bio}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Related articles */}
-        {relatedArticles.length > 0 && (
-          <div className="mt-14 pt-8 border-t border-gold/20">
-            <h2
-              className={`text-navy font-bold mb-6 ${isAr ? 'font-arabic text-xl' : 'font-heading text-lg'}`}
-            >
-              {dict.articles.related_title}
-            </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {relatedArticles.map(a => (
-                <ArticleCard key={a.slug} article={a} locale={locale} dict={dict} />
-              ))}
-            </div>
-          </div>
-        )}
-
-        <LiveComments
-          locale={locale}
-          dict={dict}
-          articleSlug={params.slug}
-          initialComments={initialComments}
-          userId={user?.id ?? null}
-        />
       </div>
     </div>
   )
