@@ -12,6 +12,11 @@ create table public.profiles (
   role text not null default 'reader'
     check (role in ('reader', 'contributor', 'editor', 'admin')),
   avatar_url text,
+  twitter_url text,
+  linkedin_url text,
+  youtube_url text,
+  instagram_url text,
+  website_url text,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );

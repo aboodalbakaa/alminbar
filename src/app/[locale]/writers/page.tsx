@@ -28,11 +28,19 @@ export default async function WritersPage({
   const isAr = locale === 'ar'
 
   const admin = createAdminClient()
-  const { data: writers } = await admin
-    .from('profiles')
-    .select('id, display_name, bio_ar, bio_en, avatar_url, role, twitter_url, linkedin_url, youtube_url, instagram_url, website_url')
-    .in('role', ['contributor', 'editor', 'admin'])
-    .order('display_name')
+  // Show all profiles that have at least one non-rejected article
+  const { data: authorIds } = await admin
+    .from('submissions')
+    .select('author_id')
+    .neq('status', 'rejected')
+  const uniqueIds = [...new Set((authorIds ?? []).map((r: { author_id: string }) => r.author_id))]
+  const { data: writers } = uniqueIds.length > 0
+    ? await admin
+        .from('profiles')
+        .select('id, display_name, bio_ar, bio_en, avatar_url, role, twitter_url, linkedin_url, youtube_url, instagram_url, website_url')
+        .in('id', uniqueIds)
+        .order('display_name')
+    : { data: [] }
 
   const list = writers ?? []
 

@@ -1,3 +1,11 @@
+## Session startup ritual
+1. Read this file fully
+2. Read PROGRESS.md — this tells you exactly where we left off
+3. Ask ONE clarifying question if needed, then start working
+4. At session end: update PROGRESS.md before Abood types /exit
+
+---
+
 # Al-Minbar | المنبر
 
 ## What this is

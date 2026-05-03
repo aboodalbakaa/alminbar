@@ -30,7 +30,7 @@ export async function getAllDbArticles(): Promise<Article[]> {
   const { data } = await admin
     .from('submissions')
     .select('*, profiles!submissions_author_id_fkey(display_name)')
-    .in('status', ['approved', 'published'])
+    .neq('status', 'rejected')
     .order('created_at', { ascending: false })
   return (data ?? []).map(rowToArticle)
 }
@@ -41,7 +41,7 @@ export async function getDbArticlesByAuthor(authorId: string): Promise<Article[]
     .from('submissions')
     .select('*, profiles!submissions_author_id_fkey(display_name)')
     .eq('author_id', authorId)
-    .in('status', ['approved', 'published'])
+    .neq('status', 'rejected')
     .order('created_at', { ascending: false })
   return (data ?? []).map(rowToArticle)
 }
@@ -52,7 +52,7 @@ export async function getDbArticleById(id: string): Promise<Article | null> {
     .from('submissions')
     .select('*, profiles!submissions_author_id_fkey(display_name)')
     .eq('id', id)
-    .in('status', ['approved', 'published'])
+    .neq('status', 'rejected')
     .maybeSingle()
   return data ? rowToArticle(data) : null
 }
