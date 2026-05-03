@@ -12,7 +12,7 @@ export async function createSubmission(formData: FormData) {
   const action = formData.get('intent') as string
   const status = action === 'submit' ? 'pending' : 'draft'
 
-  const { error } = await supabase.from('submissions').insert({
+  const { data: inserted, error } = await supabase.from('submissions').insert({
     author_id: user.id,
     title_ar: formData.get('title_ar') as string,
     title_en: (formData.get('title_en') as string) || '',
@@ -23,10 +23,10 @@ export async function createSubmission(formData: FormData) {
     topic_ar: (formData.get('topic_ar') as string) || 'سياسة',
     topic_en: (formData.get('topic_en') as string) || 'Politics',
     status,
-  })
+  }).select('id').single()
 
-  if (error) {
-    redirect(`/${locale}/submit?error=${encodeURIComponent(error.message)}`)
+  if (error || !inserted) {
+    redirect(`/${locale}/submit?error=${encodeURIComponent(error?.message ?? 'unknown error')}`)
   }
 
   redirect(`/${locale}/dashboard`)
@@ -43,7 +43,7 @@ export async function updateSubmission(formData: FormData) {
   const action = formData.get('intent') as string
   const status = action === 'submit' ? 'pending' : 'draft'
 
-  await supabase
+  const { error } = await supabase
     .from('submissions')
     .update({
       title_ar: formData.get('title_ar') as string,
@@ -59,6 +59,10 @@ export async function updateSubmission(formData: FormData) {
     })
     .eq('id', id)
     .eq('author_id', user.id)
+
+  if (error) {
+    redirect(`/${locale}/submit/edit/${id}?error=${encodeURIComponent(error.message)}`)
+  }
 
   redirect(`/${locale}/dashboard`)
 }
