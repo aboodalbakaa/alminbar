@@ -147,7 +147,7 @@ export default function SubmitForm({ locale, dict, draft }: Props) {
       <div className="flex gap-4 pt-2">
         <button
           type="submit"
-          name="action"
+          name="intent"
           value="draft"
           className="flex-1 border border-navy/30 text-navy py-3 hover:bg-navy/5 transition-colors duration-200 text-sm"
         >
@@ -155,7 +155,7 @@ export default function SubmitForm({ locale, dict, draft }: Props) {
         </button>
         <button
           type="submit"
-          name="action"
+          name="intent"
           value="submit"
           className="flex-1 bg-navy text-white py-3 hover:bg-navy/90 transition-colors duration-200 text-sm"
         >

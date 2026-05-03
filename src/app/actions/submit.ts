@@ -9,7 +9,7 @@ export async function createSubmission(formData: FormData) {
 
   if (!user) redirect(`/${locale}/auth/login`)
 
-  const action = formData.get('action') as string
+  const action = formData.get('intent') as string
   const status = action === 'submit' ? 'pending' : 'draft'
 
   const { error } = await supabase.from('submissions').insert({
@@ -40,7 +40,7 @@ export async function updateSubmission(formData: FormData) {
   if (!user) redirect(`/${locale}/auth/login`)
 
   const id = formData.get('id') as string
-  const action = formData.get('action') as string
+  const action = formData.get('intent') as string
   const status = action === 'submit' ? 'pending' : 'draft'
 
   await supabase
