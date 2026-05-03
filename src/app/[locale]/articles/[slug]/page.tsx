@@ -31,8 +31,16 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   if (!isValidLocale(params.locale)) return {}
   const locale = params.locale as Locale
-  const article = getArticleBySlug(params.slug)
   const isAr = locale === 'ar'
+
+  const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+  let article
+  if (UUID_RE.test(params.slug)) {
+    article = await getDbArticleById(params.slug)
+  } else {
+    try { article = getArticleBySlug(params.slug) } catch { return {} }
+  }
+  if (!article) return {}
 
   return {
     title: isAr ? article.title_ar : article.title_en,
