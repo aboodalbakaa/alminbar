@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { Noto_Naskh_Arabic, Amiri, Cormorant_Garamond, Inter, JetBrains_Mono } from 'next/font/google'
+import { Noto_Naskh_Arabic, Amiri, Cormorant_Garamond, Outfit, JetBrains_Mono } from 'next/font/google'
 import './globals.css'
 
 const notoNaskhArabic = Noto_Naskh_Arabic({
@@ -25,8 +25,9 @@ const cormorantGaramond = Cormorant_Garamond({
   display: 'swap',
 })
 
-const inter = Inter({
+const outfit = Outfit({
   subsets: ['latin'],
+  weight: ['300', '400', '500', '600', '700', '800', '900'],
   variable: '--font-body',
   display: 'swap',
 })
@@ -62,7 +63,7 @@ export default function RootLayout({
     <html
       lang="ar"
       dir="rtl"
-      className={`${notoNaskhArabic.variable} ${amiri.variable} ${cormorantGaramond.variable} ${inter.variable} ${jetbrainsMono.variable}`}
+      className={`${notoNaskhArabic.variable} ${amiri.variable} ${cormorantGaramond.variable} ${outfit.variable} ${jetbrainsMono.variable}`}
     >
       <body className="bg-clay text-ink min-h-screen flex flex-col antialiased">
         {children}
