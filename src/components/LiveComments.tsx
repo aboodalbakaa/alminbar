@@ -28,6 +28,8 @@ export default function LiveComments({ locale, dict, articleSlug, initialComment
   const isAr = locale === 'ar'
 
   useEffect(() => {
+    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) return
+
     const supabase = createClient()
     const channel = supabase
       .channel(`comments:${articleSlug}`)
