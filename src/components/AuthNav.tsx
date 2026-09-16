@@ -10,6 +10,25 @@ interface Props {
 }
 
 export default async function AuthNav({ locale, dict }: Props) {
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+    return (
+      <div className="flex items-center gap-3">
+        <Link
+          href={`/${locale}/auth/login`}
+          className="text-white/55 hover:text-white text-xs transition-colors duration-200"
+        >
+          {dict.auth.login}
+        </Link>
+        <Link
+          href={`/${locale}/auth/signup`}
+          className="text-xs border border-gold/40 hover:border-gold text-gold px-3 py-1 transition-colors duration-200"
+        >
+          {dict.auth.signup}
+        </Link>
+      </div>
+    )
+  }
+
   const supabase = createClient()
   const {
     data: { user },

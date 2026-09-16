@@ -18,6 +18,7 @@ export default function Header({ locale, dict }: Props) {
     { href: `/${locale}`, label: dict.nav.home },
     { href: `/${locale}/articles`, label: dict.nav.articles },
     { href: `/${locale}/government`, label: isAr ? 'رقابة الحكومة' : 'Gov. Tracker' },
+    { href: `/${locale}/government/briefing`, label: isAr ? 'الموجز المالي' : 'Fiscal brief' },
     { href: `/${locale}/writers`, label: isAr ? 'الكتّاب' : 'Writers' },
     { href: `/${locale}/about`, label: dict.nav.about },
     { href: `/${locale}/submit`, label: dict.nav.submit },
@@ -81,7 +82,7 @@ export default function Header({ locale, dict }: Props) {
         aria-label={isAr ? 'القائمة الرئيسية' : 'Main navigation'}
       >
         <div className="max-w-5xl mx-auto px-6">
-          <ul className="flex items-center justify-center gap-1">
+          <ul className="flex items-center justify-center gap-1 flex-wrap">
             {navLinks.map(link => (
               <li key={link.href}>
                 <Link

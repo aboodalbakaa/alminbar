@@ -1,15 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
-import { runScrapePipeline } from '@/lib/scrapers/pipeline'
+import { seedGovernment } from '@/lib/scrapers/seed'
 
 export const dynamic = 'force-dynamic'
-export const maxDuration = 60
+export const maxDuration = 30
 
 const CRON_SECRET = process.env.CRON_SECRET
-
-function unauthorized() {
-  return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-}
 
 function isAuthorized(req: NextRequest) {
   if (!CRON_SECRET) return false
@@ -18,22 +14,15 @@ function isAuthorized(req: NextRequest) {
   return authHeader === `Bearer ${CRON_SECRET}` || querySecret === CRON_SECRET
 }
 
-async function run() {
+export async function POST(req: NextRequest) {
+  if (!isAuthorized(req)) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
   const admin = createAdminClient()
-  const results = await runScrapePipeline(admin)
-  return NextResponse.json({
-    ok: true,
-    scraped_at: new Date().toISOString(),
-    ...results,
-  })
+  const result = await seedGovernment(admin)
+  return NextResponse.json({ ok: true, seeded_at: new Date().toISOString(), ...result })
 }
 
 export async function GET(req: NextRequest) {
-  if (!isAuthorized(req)) return unauthorized()
-  return run()
-}
-
-export async function POST(req: NextRequest) {
-  if (!isAuthorized(req)) return unauthorized()
-  return run()
+  return POST(req)
 }

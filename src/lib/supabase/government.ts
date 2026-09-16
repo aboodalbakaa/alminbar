@@ -1,5 +1,6 @@
 import 'server-only'
 import { createAdminClient } from './admin'
+import { SEED_METRICS } from '@/lib/scrapers/seed-data'
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -105,9 +106,37 @@ export type ParliamentSession = {
   description_en: string | null
 }
 
+function supabaseConfigured() {
+  return Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY)
+}
+
+export function fallbackFiscalMetrics(): CountryMetric[] {
+  return SEED_METRICS.map(m => ({
+    id: m.slug,
+    slug: m.slug,
+    indicator_code: null,
+    name_ar: m.name_ar,
+    name_en: m.name_en,
+    description_ar: m.description_ar,
+    description_en: m.description_en,
+    value: m.value,
+    unit: m.unit,
+    year: m.year,
+    global_rank: m.global_rank ?? null,
+    total_countries: m.total_countries ?? null,
+    previous_value: m.previous_value ?? null,
+    previous_rank: null,
+    trend: m.trend ?? null,
+    category: m.category,
+    source_name: m.source_name,
+    source_url: m.source_url,
+  }))
+}
+
 // ─── Officials ────────────────────────────────────────────────────────────────
 
 export async function getAllOfficials(): Promise<Official[]> {
+  if (!supabaseConfigured()) return []
   const admin = createAdminClient()
   const { data } = await admin
     .from('officials')
@@ -118,6 +147,7 @@ export async function getAllOfficials(): Promise<Official[]> {
 }
 
 export async function getOfficialBySlug(slug: string): Promise<Official | null> {
+  if (!supabaseConfigured()) return null
   const admin = createAdminClient()
   const { data } = await admin
     .from('officials')
@@ -130,6 +160,7 @@ export async function getOfficialBySlug(slug: string): Promise<Official | null> 
 // ─── KPIs ─────────────────────────────────────────────────────────────────────
 
 export async function getKpisByOfficial(officialId: string): Promise<KPI[]> {
+  if (!supabaseConfigured()) return []
   const admin = createAdminClient()
   const { data } = await admin
     .from('kpis')
@@ -140,6 +171,7 @@ export async function getKpisByOfficial(officialId: string): Promise<KPI[]> {
 }
 
 export async function getAllKpis(): Promise<KPI[]> {
+  if (!supabaseConfigured()) return []
   const admin = createAdminClient()
   const { data } = await admin
     .from('kpis')
@@ -151,6 +183,7 @@ export async function getAllKpis(): Promise<KPI[]> {
 // ─── Scraped News ─────────────────────────────────────────────────────────────
 
 export async function getRecentNews(limit = 20): Promise<ScrapedItem[]> {
+  if (!supabaseConfigured()) return []
   const admin = createAdminClient()
   const { data } = await admin
     .from('scraped_items')
@@ -161,7 +194,35 @@ export async function getRecentNews(limit = 20): Promise<ScrapedItem[]> {
   return data ?? []
 }
 
+export async function getFiscalNews(limit = 24): Promise<ScrapedItem[]> {
+  if (!supabaseConfigured()) return []
+  const admin = createAdminClient()
+  const { data } = await admin
+    .from('scraped_items')
+    .select('*')
+    .eq('is_published', true)
+    .overlaps('tags', ['fiscal', 'budget', 'oil', 'finance', 'economy', 'briefing'])
+    .order('published_at', { ascending: false })
+    .limit(limit)
+  return data ?? []
+}
+
+export async function getLatestBriefing(): Promise<ScrapedItem | null> {
+  if (!supabaseConfigured()) return null
+  const admin = createAdminClient()
+  const { data } = await admin
+    .from('scraped_items')
+    .select('*')
+    .eq('is_published', true)
+    .contains('tags', ['briefing'])
+    .order('published_at', { ascending: false })
+    .limit(1)
+    .maybeSingle()
+  return data
+}
+
 export async function getNewsByOfficial(officialId: string, limit = 10): Promise<ScrapedItem[]> {
+  if (!supabaseConfigured()) return []
   const admin = createAdminClient()
   const { data } = await admin
     .from('scraped_items')
@@ -176,6 +237,7 @@ export async function getNewsByOfficial(officialId: string, limit = 10): Promise
 // ─── Corruption Cases ─────────────────────────────────────────────────────────
 
 export async function getPublishedCorruptionCases(): Promise<CorruptionCase[]> {
+  if (!supabaseConfigured()) return []
   const admin = createAdminClient()
   const { data } = await admin
     .from('corruption_cases')
@@ -186,6 +248,7 @@ export async function getPublishedCorruptionCases(): Promise<CorruptionCase[]> {
 }
 
 export async function getCorruptionByOfficial(officialId: string): Promise<CorruptionCase[]> {
+  if (!supabaseConfigured()) return []
   const admin = createAdminClient()
   const { data } = await admin
     .from('corruption_cases')
@@ -199,16 +262,19 @@ export async function getCorruptionByOfficial(officialId: string): Promise<Corru
 // ─── Country Metrics ──────────────────────────────────────────────────────────
 
 export async function getCountryMetrics(): Promise<CountryMetric[]> {
+  if (!supabaseConfigured()) return fallbackFiscalMetrics()
   const admin = createAdminClient()
   const { data } = await admin
     .from('country_metrics')
     .select('*')
     .order('category')
     .order('name_en')
-  return data ?? []
+  const rows = data ?? []
+  return rows.length > 0 ? rows : fallbackFiscalMetrics()
 }
 
 export async function getMetricBySlug(slug: string): Promise<CountryMetric | null> {
+  if (!supabaseConfigured()) return fallbackFiscalMetrics().find(m => m.slug === slug) ?? null
   const admin = createAdminClient()
   const { data } = await admin
     .from('country_metrics')
@@ -221,6 +287,7 @@ export async function getMetricBySlug(slug: string): Promise<CountryMetric | nul
 // ─── Parliament ───────────────────────────────────────────────────────────────
 
 export async function getCurrentSession(): Promise<ParliamentSession | null> {
+  if (!supabaseConfigured()) return null
   const admin = createAdminClient()
   const { data } = await admin
     .from('parliament_sessions')
@@ -233,6 +300,7 @@ export async function getCurrentSession(): Promise<ParliamentSession | null> {
 }
 
 export async function getAllSessions(): Promise<ParliamentSession[]> {
+  if (!supabaseConfigured()) return []
   const admin = createAdminClient()
   const { data } = await admin
     .from('parliament_sessions')

@@ -7,6 +7,7 @@ import {
   getAllKpis,
   getRecentNews,
   getCountryMetrics,
+  getFiscalNews,
   calcKpiStats,
 } from '@/lib/supabase/government'
 
@@ -86,11 +87,12 @@ export default async function GovernmentPage({ params }: { params: { locale: str
   const locale = params.locale as Locale
   const isAr = locale === 'ar'
 
-  const [officials, kpis, news, metrics] = await Promise.all([
+  const [officials, kpis, news, metrics, fiscalNews] = await Promise.all([
     getAllOfficials(),
     getAllKpis() as Promise<KPIWithMilestones[]>,
     getRecentNews(12),
     getCountryMetrics(),
+    getFiscalNews(8),
   ])
 
   const stats    = calcKpiStats(kpis)
@@ -100,6 +102,10 @@ export default async function GovernmentPage({ params }: { params: { locale: str
   const ministers = officials.filter(o => o.role_type === 'minister' || o.role_type === 'deputy_pm')
   const econMetrics = metrics.filter(m => m.category === 'economy').slice(0, 6)
   const days = daysInOffice(pm?.term_start ?? null)
+  const oil = metrics.find(m => m.slug === 'brent-wti-spot')
+  const deficit = metrics.find(m => m.slug === 'h1-2026-fiscal-deficit')
+  const salaryShare = metrics.find(m => m.slug === 'h1-2026-salary-share')
+  const pmName = pm ? (isAr ? pm.name_ar : pm.name_en) : (isAr ? 'رئيس الوزراء' : 'the Prime Minister')
 
   // Group KPIs with milestones by year
   const kpisWithMilestones = kpis.filter(k => k.milestones && Array.isArray(k.milestones) && k.milestones.length > 0)
@@ -127,8 +133,8 @@ export default async function GovernmentPage({ params }: { params: { locale: str
 
           <p className={`text-white/50 text-base md:text-lg max-w-md mb-10 leading-relaxed ${isAr ? 'font-arabic' : ''}`}>
             {isAr
-              ? `علي الزيدي رئيساً للوزراء — لكن هل القرارات قراراته أم قرارات من يديرونه؟ نتابع كل وعد وكل إخفاق.`
-              : `Ali al-Zaidi is Prime Minister — but whose decisions are being made? We track every promise, every failure.`}
+              ? `${pmName} رئيساً للوزراء — لكن هل القرارات قراراته أم قرارات من يديرونه؟ نتابع كل وعد مالي وكل إخفاق.`
+              : `${pmName} is Prime Minister — but whose decisions are being made? We track every fiscal pledge and every miss.`}
           </p>
 
           {/* Day counter + score strip */}
@@ -149,6 +155,7 @@ export default async function GovernmentPage({ params }: { params: { locale: str
           {/* Sub-nav */}
           <div className={`flex gap-5 flex-wrap ${isAr ? 'flex-row-reverse' : ''}`}>
             {[
+              { href: `/${locale}/government/briefing`, label: isAr ? 'الموجز المالي' : 'Fiscal brief' },
               { href: `/${locale}/government/parliament`, label: isAr ? 'البرلمان والمقاعد' : 'Parliament & Seats' },
               { href: `/${locale}/government/corruption`, label: isAr ? 'قضايا الفساد' : 'Corruption Cases' },
               { href: `/${locale}/government/metrics`,   label: isAr ? 'التصنيفات الدولية' : 'Global Rankings' },
@@ -343,6 +350,58 @@ export default async function GovernmentPage({ params }: { params: { locale: str
               ))}
             </div>
           </div>
+        </section>
+
+        {/* ─── FISCAL WATCHDOG ────────────────────────────────────────── */}
+        <section>
+          <div className={`flex items-end justify-between mb-6 gap-4 ${isAr ? 'flex-row-reverse' : ''}`}>
+            <div>
+              <p className={`text-[10px] uppercase tracking-[0.2em] text-gold mb-2 ${isAr ? 'font-arabic text-xs normal-case tracking-normal text-right' : ''}`}>
+                {isAr ? 'رقابة مالية آلية' : 'Automated fiscal watchdog'}
+              </p>
+              <h2 className={`text-[#18181B] font-bold text-2xl md:text-3xl tracking-tight ${isAr ? 'font-arabic' : ''}`}>
+                {isAr ? 'العراق يُصرَّف بلا موازنة ٢٠٢٦' : 'Iraq is being spent without a 2026 budget'}
+              </h2>
+            </div>
+            <Link href={`/${locale}/government/briefing`} className="text-gold text-sm hover:underline flex-shrink-0">
+              {isAr ? 'الموجز الكامل ←' : 'Full brief →'}
+            </Link>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
+            {[
+              {
+                v: oil?.value != null ? `$${Number(oil.value).toFixed(1)}` : '—',
+                s: isAr ? 'خام النفط / تعادل ٦٥$' : 'Crude vs $65 break-even',
+              },
+              {
+                v: deficit?.value != null ? formatValue(Number(deficit.value), 'USD') : '—',
+                s: isAr ? 'عجز النصف الأول ٢٠٢٦' : 'H1 2026 fiscal deficit',
+              },
+              {
+                v: salaryShare?.value != null ? `${Number(salaryShare.value).toFixed(0)}%` : '—',
+                s: isAr ? 'الرواتب من الإنفاق' : 'Payroll share of spending',
+              },
+            ].map(card => (
+              <div key={card.s} className="rounded-xl bg-navy text-white p-5">
+                <div className="font-mono font-bold text-2xl text-gold">{card.v}</div>
+                <div className={`text-white/50 text-xs mt-2 ${isAr ? 'font-arabic' : 'uppercase tracking-widest'}`}>{card.s}</div>
+              </div>
+            ))}
+          </div>
+          {fiscalNews.length > 0 && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+              {fiscalNews.filter(n => !(n.tags ?? []).includes('briefing')).slice(0, 4).map(item => (
+                <a key={item.id} href={item.source_url} target="_blank" rel="noopener noreferrer"
+                  className="rounded-lg bg-white px-4 py-3 text-sm hover:border-gold"
+                  style={{ border: '1px solid rgba(226,232,240,0.8)' }}>
+                  <span className="text-[10px] text-gold uppercase tracking-widest">{item.source_name}</span>
+                  <div className={`text-[#18181B] mt-1 line-clamp-2 ${isAr ? 'font-arabic' : ''}`}>
+                    {isAr ? (item.title_ar || item.title_en) : (item.title_en || item.title_ar)}
+                  </div>
+                </a>
+              ))}
+            </div>
+          )}
         </section>
 
         {/* ─── ECONOMY STRIP ────────────────────────────────────────────── */}
