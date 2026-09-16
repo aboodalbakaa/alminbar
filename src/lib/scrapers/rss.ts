@@ -1,5 +1,11 @@
 import Parser from 'rss-parser'
-import { RSS_SOURCES, GOVERNMENT_KEYWORDS_AR, GOVERNMENT_KEYWORDS_EN } from './sources'
+import {
+  RSS_SOURCES,
+  GOVERNMENT_KEYWORDS_AR,
+  GOVERNMENT_KEYWORDS_EN,
+  FISCAL_KEYWORDS_AR,
+  FISCAL_KEYWORDS_EN,
+} from './sources'
 
 const parser = new Parser({
   timeout: 10000,
@@ -29,39 +35,49 @@ function scoreRelevance(text: string): number {
   for (const kw of GOVERNMENT_KEYWORDS_EN) {
     if (lower.includes(kw)) score += 0.1
   }
+  for (const kw of FISCAL_KEYWORDS_AR) {
+    if (text.includes(kw)) score += 0.15
+  }
+  for (const kw of FISCAL_KEYWORDS_EN) {
+    if (lower.includes(kw)) score += 0.15
+  }
   return Math.min(score, 1)
 }
 
-function extractTags(text: string): string[] {
+export function extractTags(text: string): string[] {
   const tags: string[] = []
   const checks: [string, string][] = [
-    ['الفساد', 'corruption'], ['الميزانية', 'budget'], ['النفط', 'oil'],
+    ['الفساد', 'corruption'], ['الميزانية', 'budget'], ['الموازنة', 'budget'], ['النفط', 'oil'],
     ['الكهرباء', 'electricity'], ['البرلمان', 'parliament'], ['الحكومة', 'government'],
     ['الوزير', 'minister'], ['المالية', 'finance'], ['الأمن', 'security'],
     ['الاقتصاد', 'economy'], ['التعليم', 'education'], ['الصحة', 'healthcare'],
+    ['العجز', 'fiscal'], ['الرواتب', 'finance'], ['الدينار', 'finance'],
+    ['الضريبة', 'finance'], ['الاقتراض', 'fiscal'],
   ]
   for (const [ar, en] of checks) {
     if (text.includes(ar) || text.toLowerCase().includes(en)) tags.push(en)
+  }
+  const lower = text.toLowerCase()
+  if (FISCAL_KEYWORDS_AR.some(k => text.includes(k)) || FISCAL_KEYWORDS_EN.some(k => lower.includes(k))) {
+    tags.push('fiscal')
   }
   return [...new Set(tags)]
 }
 
 export async function scrapeRssSources(): Promise<ScrapedItem[]> {
-  const results: ScrapedItem[] = []
-
-  for (const source of RSS_SOURCES) {
+  const perSource = await Promise.all(RSS_SOURCES.map(async source => {
     try {
       const feed = await parser.parseURL(source.url)
+      const items: ScrapedItem[] = []
       for (const item of feed.items.slice(0, 20)) {
         const title = item.title || ''
         const summary = item.contentSnippet || item.summary || ''
         const fullText = `${title} ${summary}`
         const score = scoreRelevance(fullText)
 
-        // Only keep items with some relevance to government
         if (score < 0.1 && source.category === 'news') continue
 
-        results.push({
+        items.push({
           source_name: source.name_ar,
           source_url: item.link || '',
           title_ar: title || null,
@@ -75,12 +91,13 @@ export async function scrapeRssSources(): Promise<ScrapedItem[]> {
           relevance_score: Math.round(score * 100) / 100,
         })
       }
+      return items
     } catch {
-      // Source unavailable — skip silently, continue with others
+      return [] as ScrapedItem[]
     }
-  }
+  }))
 
-  return results
+  return perSource.flat()
 }
 
 // Nitter RSS for a Twitter handle (nitter is a public Twitter frontend with RSS)

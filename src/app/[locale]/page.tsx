@@ -96,6 +96,27 @@ export default async function HomePage({
         <ZigDivider />
       </div>
 
+      <section className="px-6">
+        <div className="max-w-5xl mx-auto">
+          <Link
+            href={`/${locale}/government/briefing`}
+            className="block rounded-2xl bg-navy text-white p-6 md:p-8 hover:bg-[#243656] transition-colors"
+          >
+            <p className="text-gold text-[11px] uppercase tracking-[0.2em] mb-2">
+              {isAr ? 'رقابة مالية آلية' : 'Automated fiscal watchdog'}
+            </p>
+            <h2 className={`font-bold text-xl md:text-2xl ${isAr ? 'font-arabic' : 'tracking-tight'}`}>
+              {isAr ? 'الموجز المالي: لا موازنة ٢٠٢٦، وعجز يفوق ١٦ مليار دولار' : 'Fiscal brief: no 2026 budget, a deficit above $16bn'}
+            </h2>
+            <p className={`mt-2 text-white/55 text-sm max-w-2xl ${isAr ? 'font-arabic' : ''}`}>
+              {isAr
+                ? 'سكرابر يومي يقرأ الوكالات والمؤشرات وأسعار النفط، ويُخرج إنذارات قابلة للقياس — لا تعليقاً.'
+                : 'A daily scraper reads the wires, the indicators, and the oil print, and emits measurable flags — not commentary.'}
+            </p>
+          </Link>
+        </div>
+      </section>
+
       {/* Latest Articles */}
       <section className="py-12 px-6">
         <div className="max-w-5xl mx-auto">

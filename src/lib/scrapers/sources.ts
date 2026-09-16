@@ -61,21 +61,43 @@ export const RSS_SOURCES: RssSource[] = [
     url: 'https://almadapaper.net/feed/',
     category: 'news',
   },
+  {
+    name: 'Iraq Business News',
+    name_ar: 'أخبار الأعمال العراقية',
+    url: 'https://www.iraq-businessnews.com/feed/',
+    category: 'news',
+  },
 ]
 
 // Government keywords for relevance filtering
 export const GOVERNMENT_KEYWORDS_AR = [
-  'الحكومة', 'البرلمان', 'الوزير', 'رئيس الوزراء', 'السوداني',
-  'مجلس النواب', 'مجلس الوزراء', 'الميزانية', 'الفساد',
+  'الحكومة', 'البرلمان', 'الوزير', 'رئيس الوزراء', 'السوداني', 'الزيدي',
+  'مجلس النواب', 'مجلس الوزراء', 'الميزانية', 'الموازنة', 'الفساد',
   'المالية', 'النفط', 'الكهرباء', 'الخدمات', 'البنية التحتية',
   'قانون', 'قرار', 'مرسوم', 'تعيين', 'إقالة', 'استجواب',
+  'العجز', 'الرواتب', 'الدينار', 'الإيرادات', 'النفقات', 'الضريبة',
+  'الاقتراض', 'الدين العام', 'الاحتياطي', 'أوبك', 'سعر الصرف',
 ]
 
 export const GOVERNMENT_KEYWORDS_EN = [
-  'government', 'parliament', 'minister', 'prime minister', 'sudani',
+  'government', 'parliament', 'minister', 'prime minister', 'sudani', 'zaidi',
   'council of representatives', 'cabinet', 'budget', 'corruption',
   'finance', 'oil', 'electricity', 'services', 'infrastructure',
   'law', 'decree', 'appointment', 'dismissal', 'interpellation',
+  'deficit', 'salary', 'payroll', 'dinar', 'revenue', 'expenditure',
+  'tax', 'debt', 'borrowing', 'opec', 'exchange rate', 'fiscal',
+]
+
+export const FISCAL_KEYWORDS_AR = [
+  'الموازنة', 'الميزانية', 'العجز', 'الرواتب', 'الدينار', 'النفط',
+  'الإيرادات', 'النفقات', 'الضريبة', 'الاقتراض', 'الدين العام',
+  'الاحتياطي', 'سعر الصرف', 'أوبك', 'المالية', 'الاستثمار',
+]
+
+export const FISCAL_KEYWORDS_EN = [
+  'budget', 'deficit', 'salary', 'payroll', 'dinar', 'oil', 'crude',
+  'revenue', 'expenditure', 'tax', 'debt', 'imf', 'fiscal', 'opec',
+  'exchange', 'finance', 'investment', 'wage bill',
 ]
 
 // World Bank indicators for Iraq
@@ -92,6 +114,11 @@ export const WORLD_BANK_INDICATORS = [
   { code: 'IT.NET.USER.ZS',    name_en: 'Internet users (% of pop.)',     name_ar: 'مستخدمو الإنترنت',                     unit: '%',   category: 'social'  },
   { code: 'GC.BAL.CASH.GD.ZS', name_en: 'Budget balance (% of GDP)',     name_ar: 'الميزانية العامة (% من الناتج)',        unit: '%',   category: 'economy' },
   { code: 'FI.RES.TOTL.CD',    name_en: 'Foreign reserves (USD)',         name_ar: 'الاحتياطيات الأجنبية',                 unit: 'USD', category: 'economy' },
+  { code: 'NY.GDP.PETR.RT.ZS', name_en: 'Oil rents (% of GDP)',           name_ar: 'ريع النفط (% من الناتج)',              unit: '%',   category: 'economy' },
+  { code: 'GC.TAX.TOTL.GD.ZS', name_en: 'Tax revenue (% of GDP)',         name_ar: 'الإيرادات الضريبية (% من الناتج)',     unit: '%',   category: 'economy' },
+  { code: 'GC.DOD.TOTL.GD.ZS', name_en: 'Central government debt (% of GDP)', name_ar: 'دين الحكومة المركزية (% من الناتج)', unit: '%', category: 'economy' },
+  { code: 'BN.CAB.XOKA.GD.ZS', name_en: 'Current account balance (% of GDP)', name_ar: 'ميزان الحساب الجاري (% من الناتج)', unit: '%', category: 'economy' },
+  { code: 'TX.VAL.FUEL.ZS.UN', name_en: 'Fuel exports (% of merchandise exports)', name_ar: 'صادرات الوقود (% من الصادرات السلعية)', unit: '%', category: 'economy' },
 ]
 
 // Manual/static international rankings (updated periodically)

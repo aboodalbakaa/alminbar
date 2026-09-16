@@ -4,13 +4,16 @@ import { isValidLocale } from '@/i18n.config'
 import type { Locale } from '@/i18n.config'
 import { createClient as createServerClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { triggerGovernmentScrape, triggerGovernmentSeed } from '@/app/actions/government'
 
 export const dynamic = 'force-dynamic'
 
 export default async function AdminGovernmentPage({
   params,
+  searchParams,
 }: {
   params: { locale: string }
+  searchParams?: { seeded?: string; scraped?: string }
 }) {
   if (!isValidLocale(params.locale)) notFound()
   const locale = params.locale as Locale
@@ -45,6 +48,16 @@ export default async function AdminGovernmentPage({
         <h1 className={`text-navy font-bold text-2xl ${isAr ? 'font-arabic' : 'font-heading italic'}`}>
           {isAr ? 'إدارة ملف الحكومة' : 'Government Module Admin'}
         </h1>
+        {searchParams?.seeded === '1' && (
+          <p className={`text-sm text-green-700 mt-2 ${isAr ? 'font-arabic' : ''}`}>
+            {isAr ? 'تم بذر الوزراء والوعود المالية.' : 'Cabinet and fiscal pledges seeded.'}
+          </p>
+        )}
+        {searchParams?.scraped === '1' && (
+          <p className={`text-sm text-green-700 mt-2 ${isAr ? 'font-arabic' : ''}`}>
+            {isAr ? 'اكتمل السكرابر والموجز المالي.' : 'Scraper and fiscal brief completed.'}
+          </p>
+        )}
       </div>
 
       {/* Quick links */}
@@ -65,10 +78,18 @@ export default async function AdminGovernmentPage({
           className="text-sm px-4 py-2 rounded border border-navy/30 text-navy/70 hover:bg-navy/5 transition-colors">
           {isAr ? '+ إضافة دورة برلمانية' : '+ Add Parliament Session'}
         </Link>
-        <form action="/api/scrape" method="POST">
+        <form action={triggerGovernmentSeed}>
+          <input type="hidden" name="locale" value={locale} />
+          <button type="submit"
+            className="text-sm px-4 py-2 rounded border border-gold text-navy hover:bg-gold/10 transition-colors">
+            {isAr ? '⚡ بذر الحكومة والوعود المالية' : '⚡ Seed cabinet + fiscal pledges'}
+          </button>
+        </form>
+        <form action={triggerGovernmentScrape}>
+          <input type="hidden" name="locale" value={locale} />
           <button type="submit"
             className="text-sm px-4 py-2 rounded border border-navy/30 text-navy/70 hover:bg-navy/5 transition-colors">
-            {isAr ? '↻ تشغيل السكرابر يدوياً' : '↻ Run Scraper Now'}
+            {isAr ? '↻ تشغيل السكرابر والموجز المالي' : '↻ Run scraper + fiscal brief'}
           </button>
         </form>
       </div>

@@ -48,6 +48,8 @@ export default function Footer({ locale, dict }: Props) {
               <nav className="flex flex-col gap-2">
                 {[
                   { href: `/${locale}`, label: dict.nav.home },
+                  { href: `/${locale}/government`, label: isAr ? 'رقابة الحكومة' : 'Gov. Tracker' },
+                  { href: `/${locale}/government/briefing`, label: isAr ? 'الموجز المالي' : 'Fiscal brief' },
                   { href: `/${locale}/articles`, label: dict.nav.articles },
                   { href: `/${locale}/about`, label: dict.nav.about },
                   { href: `/${locale}/submit`, label: dict.nav.submit },

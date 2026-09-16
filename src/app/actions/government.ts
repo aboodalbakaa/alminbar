@@ -261,3 +261,28 @@ export async function upsertMetric(formData: FormData) {
   revalidatePath('/government/metrics')
   redirect(`/ar/admin/government`)
 }
+
+function localeFrom(formData: FormData) {
+  const locale = formData.get('locale') as string
+  return locale === 'en' ? 'en' : 'ar'
+}
+
+export async function triggerGovernmentSeed(formData: FormData) {
+  await requireAdmin()
+  const locale = localeFrom(formData)
+  const { seedGovernment } = await import('@/lib/scrapers/seed')
+  await seedGovernment(createAdminClient())
+  revalidatePath('/government')
+  revalidatePath(`/${locale}/admin/government`)
+  redirect(`/${locale}/admin/government?seeded=1`)
+}
+
+export async function triggerGovernmentScrape(formData: FormData) {
+  await requireAdmin()
+  const locale = localeFrom(formData)
+  const { runScrapePipeline } = await import('@/lib/scrapers/pipeline')
+  await runScrapePipeline(createAdminClient())
+  revalidatePath('/government')
+  revalidatePath(`/${locale}/admin/government`)
+  redirect(`/${locale}/admin/government?scraped=1`)
+}
