@@ -92,23 +92,33 @@ export default async function ArticlePage({
     }
   }
 
-  const supabase = createClient()
-  const admin = createAdminClient()
-  const [dict, { data: { user } }, { data: rawComments }, mdxArticles, dbArticles, { data: authorProfile }] = await Promise.all([
-    getDictionary(locale),
-    supabase.auth.getUser(),
-    supabase
-      .from('comments')
-      .select('*, profiles(display_name)')
-      .eq('article_slug', params.slug)
-      .eq('status', 'approved')
-      .order('created_at', { ascending: true }),
-    Promise.resolve(getAllArticles()),
-    getAllDbArticles(),
-    article.author_id
-      ? admin.from('profiles').select('display_name, bio_ar, bio_en, avatar_url').eq('id', article.author_id).single()
-      : Promise.resolve({ data: null }),
-  ])
+  const configured = Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)
+  const dict = await getDictionary(locale)
+  let user = null
+  let rawComments: Comment[] | null = []
+  let authorProfile = null
+  const mdxArticles = getAllArticles()
+  const dbArticles = await getAllDbArticles()
+
+  if (configured) {
+    const supabase = createClient()
+    const admin = createAdminClient()
+    const [{ data: { user: authUser } }, { data: comments }, profileResult] = await Promise.all([
+      supabase.auth.getUser(),
+      supabase
+        .from('comments')
+        .select('*, profiles(display_name)')
+        .eq('article_slug', params.slug)
+        .eq('status', 'approved')
+        .order('created_at', { ascending: true }),
+      article.author_id
+        ? admin.from('profiles').select('display_name, bio_ar, bio_en, avatar_url').eq('id', article.author_id).single()
+        : Promise.resolve({ data: null }),
+    ])
+    user = authUser
+    rawComments = comments as Comment[] | null
+    authorProfile = profileResult.data
+  }
 
   const currentTopic = article.topic_en || article.topic_ar
   const allArticles = [...dbArticles, ...mdxArticles]
